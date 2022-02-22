@@ -50,13 +50,6 @@ find_package(PkgConfig REQUIRED)
 set(ENV{PKG_CONFIG_PATH} "/usr/lib/pkgconfig")
 pkg_check_modules(GTKMM gtkmm-4.0 REQUIRED IMPORTED_TARGET)
 
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.15/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
-
-
 # Disable linting for fetch content projects
 clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
