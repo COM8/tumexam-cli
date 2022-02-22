@@ -4,15 +4,18 @@
 
 namespace ui::windows {
 class MainWindow : public Gtk::Window {
+ private:
+    Gtk::MenuButton viewMoreBtn{};
+
  public:
     MainWindow();
 
  private:
     void prep_window();
     static void prep_overview(Gtk::Stack* stack);
-    static void prep_advanced(Gtk::Stack* stack);
+    static void prep_submission(Gtk::Stack* stack);
 
     //-----------------------------Events:-----------------------------
-    static void on_inspector_clicked();
+    void on_inspector_clicked();
 };
 }  // namespace ui::windows
