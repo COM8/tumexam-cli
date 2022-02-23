@@ -13,7 +13,9 @@ add_library(backend_tumexam STATIC TUMExamHelper.cpp
                                    SubmissionMetadata.cpp
                                    SubmissionMetadata.hpp
                                    SubmissionStudent.cpp
-                                   SubmissionStudent.hpp)
+                                   SubmissionStudent.hpp
+                                   Credentials.cpp
+                                   Credentials.hpp)
 
 target_link_libraries(backend_tumexam PRIVATE logger cpr::cpr utils
                                       PUBLIC nlohmann_json::nlohmann_json)

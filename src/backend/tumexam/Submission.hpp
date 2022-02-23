@@ -11,8 +11,8 @@ class Submission {
  public:
     std::chrono::system_clock::time_point upload_date;
     std::chrono::system_clock::time_point announce_date;
-    bool announced;
-    bool uploaded;
+    bool announced{false};
+    bool uploaded{false};
     std::string path;
     std::vector<SubmissionMetadata> metadata;
 

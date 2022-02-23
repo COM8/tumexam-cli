@@ -1,21 +1,33 @@
 #pragma once
 
+#include "ui/widgets/SubmissionsWidget.hpp"
 #include <gtkmm.h>
+#include <gtkmm/button.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/spinner.h>
 
 namespace ui::windows {
 class MainWindow : public Gtk::Window {
  private:
     Gtk::MenuButton viewMoreBtn{};
+    Gtk::Entry baseUrlEntry;
+    Gtk::Entry examEntry;
+    Gtk::Entry tokenEntry;
+    Gtk::Entry sessionEntry;
+    Gtk::Button applyBtn;
+    Gtk::Spinner applySpinner;
+    widgets::SubmissionsWidget submissions;
 
  public:
     MainWindow();
 
  private:
     void prep_window();
-    static void prep_overview(Gtk::Stack* stack);
-    static void prep_submission(Gtk::Stack* stack);
+    void prep_connect(Gtk::Stack* stack);
+    void prep_submission(Gtk::Stack* stack);
 
     //-----------------------------Events:-----------------------------
     void on_inspector_clicked();
+    void on_apply_clicked();
 };
 }  // namespace ui::windows

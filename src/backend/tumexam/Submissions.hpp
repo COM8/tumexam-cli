@@ -9,12 +9,13 @@
 namespace backend::tumexam {
 class Submissions {
  public:
-    int announced;
-    int uploaded;
-    int downloaded;
-    int registrations;
-    std::vector<SubmissionStudent> students;
+    int announced{0};
+    int uploaded{0};
+    int downloaded{0};
+    int registrations{0};
+    std::vector<SubmissionStudent> students{};
 
-    static Submissions from_json(const nlohmann::json& j);
+    static Submissions
+    from_json(const nlohmann::json& j);
 };
 }  // namespace backend::tumexam
