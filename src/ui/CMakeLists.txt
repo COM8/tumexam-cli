@@ -4,7 +4,6 @@ add_subdirectory(widgets)
 add_subdirectory(windows)
 add_subdirectory(resources)
 
-# add_library(ui STATIC UiContext.hpp UiContext.cpp ${CMAKE_CURRENT_BINARY_DIR}/ui_resources.c)
 add_library(ui STATIC UiContext.hpp UiContext.cpp)
 
 # Propagate the variables upwards
