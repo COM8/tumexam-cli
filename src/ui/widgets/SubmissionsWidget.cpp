@@ -1,10 +1,12 @@
 #include "SubmissionsWidget.hpp"
 #include "SubmissionWidget.hpp"
+#include "backend/tumexam/SubmissionStudent.hpp"
 #include "backend/tumexam/Submissions.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
 #include "logger/Logger.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/Date.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <memory>
@@ -40,8 +42,9 @@ void SubmissionsWidget::prep_widget() {
     updateLbl.set_margin_start(10);
     actionsBox->append(updateLbl);
 
-    submissionsScroll.set_vexpand(true);
+    submissionsFlowBox.set_selection_mode(Gtk::SelectionMode::NONE);
     submissionsScroll.set_child(submissionsFlowBox);
+    submissionsScroll.set_vexpand(true);
     append(submissionsScroll);
 }
 
@@ -60,6 +63,11 @@ void SubmissionsWidget::update() {
         SPDLOG_INFO("Found {} student submissions.", subs->students.size());
         updateLbl.set_text(get_cur_time() + " - Success");
         submissions = std::make_unique<backend::tumexam::Submissions>(std::move(*subs));
+        // Sort submissions:
+        std::sort(submissions->students.begin(), submissions->students.end(),
+                  [](const std::shared_ptr<backend::tumexam::SubmissionStudent>& a, const std::shared_ptr<backend::tumexam::SubmissionStudent>& b) {
+                      return a->get_state() < b->get_state();
+                  });
         clear_submissions();
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
             add_session_button(submission);

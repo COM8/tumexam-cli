@@ -20,5 +20,6 @@ class SubmissionStudent {
     std::optional<ExamSubmissionDetails> exam_submission_details;
 
     static SubmissionStudent from_json(const nlohmann::json& j);
+    [[nodiscard]] int get_state() const;
 };
 }  // namespace backend::tumexam

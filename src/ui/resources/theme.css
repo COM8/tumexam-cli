@@ -1,3 +1,55 @@
-.testBackground {
-    background-color: @green_5;
+@define-color statusGreen rgba(38,162,105, 0.5);
+@define-color statusYellow rgba(205,147,9, 0.5);
+@define-color statusBlue rgba(120,174,237, 0.5);
+
+.submission-downloaded-simple {
+    background-color: @statusBlue;
+}
+.submission-downloaded {
+    background-image: image(@statusBlue);
+}
+.submission-downloaded:hover {
+    background-image: image(darker(@statusBlue));
+}
+.submission-downloaded:active {
+    background-image: image(darker(darker(@statusBlue)));
+}
+
+.submission-announced-simple {
+    background-color: @statusYellow;
+}
+.submission-announced {
+    background-image: image(@statusYellow);
+}
+.submission-announced:hover {
+    background-image: image(darker(@statusYellow));
+}
+.submission-announced:active {
+    background-image: image(darker(darker(@statusYellow)));
+}
+
+.submission-uploaded-simple {
+    background-color: @statusGreen;
+}
+.submission-uploaded {
+    background-image: image(@statusGreen);
+}
+.submission-uploaded:hover {
+    background-image: image(darker(@statusGreen));
+}
+.submission-uploaded:active {
+    background-image: image(darker(darker(@statusGreen)));
+}
+
+.submission-uploaded-announced-simple {
+    background-image: image(linear-gradient(to right, @statusGreen, @statusYellow));
+}
+.submission-uploaded-announced {
+    background-image: image(linear-gradient(to right, @statusGreen, @statusYellow));
+}
+.submission-uploaded-announced:hover {
+    background-image: image(linear-gradient(to right, darker(@statusGreen), darker(@statusYellow)));
+}
+.submission-uploaded-announced:active {
+    background-image: image(linear-gradient(to right, darker(darker(@statusGreen)), darker(darker(@statusYellow))));
 }

@@ -45,11 +45,6 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     box->set_margin_bottom(10);
     stack->add(*box, "connect", "Connect");
 
-    /*Glib::RefPtr<Gtk::CssProvider> cssProvider = Gtk::CssProvider::create();
-    cssProvider->load_from_file(Gio::File::create_for_uri("resource:///ui/theme.css"));
-    box->get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    box->add_css_class("testBackground");*/
-
     Gtk::Label* baseUrlLbl = Gtk::make_managed<Gtk::Label>("Base URL");
     baseUrlLbl->set_halign(Gtk::Align::START);
     baseUrlLbl->set_margin_top(10);

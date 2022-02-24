@@ -80,4 +80,20 @@ SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
         additional_time_minutes,
         exam_submission_details};
 }
+
+int SubmissionStudent::get_state() const {
+    if (downloaded) {
+        if (uploaded) {
+            if (announced) {
+                return 3;
+            }
+            return 2;
+        }
+        if (announced) {
+            return 4;
+        }
+        return 1;
+    }
+    return 0;
+}
 }  // namespace backend::tumexam
