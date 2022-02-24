@@ -1,6 +1,12 @@
 #include "SubmissionsWidget.hpp"
+#include "SubmissionWidget.hpp"
 #include "backend/tumexam/Submissions.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
+#include "logger/Logger.hpp"
+#include "spdlog/spdlog.h"
+#include "utils/Date.hpp"
+#include <chrono>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <gtkmm/box.h>
@@ -29,11 +35,14 @@ void SubmissionsWidget::prep_widget() {
     actionsBox->append(autoUpdateSwitch);
     updateIntervallEntry.set_margin_start(10);
     updateIntervallEntry.set_increments(1, 60);
-    updateIntervallEntry.set_tooltip_text("Automatic update intervall");
+    updateIntervallEntry.set_tooltip_text("Automatic update intervall in seconds");
     actionsBox->append(updateIntervallEntry);
     updateLbl.set_margin_start(10);
-    updateLbl.set_text("Last update: 09:50");
     actionsBox->append(updateLbl);
+
+    submissionsScroll.set_vexpand(true);
+    submissionsScroll.set_child(submissionsFlowBox);
+    append(submissionsScroll);
 }
 
 void SubmissionsWidget::update() {
@@ -48,10 +57,40 @@ void SubmissionsWidget::update() {
 
     std::optional<backend::tumexam::Submissions> subs = backend::tumexam::get_submission_status(*credentials);
     if (subs) {
+        SPDLOG_INFO("Found {} student submissions.", subs->students.size());
+        updateLbl.set_text(get_cur_time() + " - Success");
         submissions = std::make_unique<backend::tumexam::Submissions>(std::move(*subs));
+        clear_submissions();
+        for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
+            add_session_button(submission);
+        }
+    } else {
+        updateLbl.set_text(get_cur_time() + " - No submissions found");
+        SPDLOG_INFO("No student submissions found.");
     }
 
     updateProgBar.hide();
     updateBtn.set_sensitive(true);
+}
+
+void SubmissionsWidget::add_session_button(std::shared_ptr<backend::tumexam::SubmissionStudent> submission) {
+    Gtk::FlowBoxChild child;
+    submissionWidgets.emplace_back(std::move(submission));
+    child.set_child(submissionWidgets.back());
+    submissionFlowBoxWidgets.emplace_back(std::move(child));
+    submissionsFlowBox.insert(submissionFlowBoxWidgets.back(), 0);
+}
+
+void SubmissionsWidget::clear_submissions() {
+    for (Gtk::FlowBoxChild& child : submissionFlowBoxWidgets) {
+        submissionsFlowBox.remove(*(child.get_parent()));
+    }
+    submissionFlowBoxWidgets.clear();
+    submissionWidgets.clear();
+}
+
+std::string SubmissionsWidget::get_cur_time() {
+    std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
+    return date::format("%T", date::floor<std::chrono::seconds>(tp));
 }
 }  // namespace ui::widgets

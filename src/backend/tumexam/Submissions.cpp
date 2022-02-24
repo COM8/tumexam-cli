@@ -1,6 +1,7 @@
 #include "Submissions.hpp"
 #include "backend/tumexam/SubmissionStudent.hpp"
 #include "nlohmann/json.hpp"
+#include <memory>
 
 namespace backend::tumexam {
 Submissions Submissions::from_json(const nlohmann::json& j) {
@@ -41,9 +42,9 @@ Submissions Submissions::from_json(const nlohmann::json& j) {
     }
     nlohmann::json::array_t students_array;
     j.at("students").get_to(students_array);
-    std::vector<SubmissionStudent> students;
+    std::vector<std::shared_ptr<SubmissionStudent>> students;
     for (const nlohmann::json& jStudent : students_array) {
-        students.push_back(SubmissionStudent::from_json(jStudent));
+        students.emplace_back(std::make_unique<SubmissionStudent>(SubmissionStudent::from_json(jStudent)));
     }
 
     return Submissions{
