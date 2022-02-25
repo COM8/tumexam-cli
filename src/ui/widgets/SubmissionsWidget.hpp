@@ -29,8 +29,10 @@ class SubmissionsWidget : public Gtk::Box {
     Gtk::ScrolledWindow submissionsScroll;
     Gtk::FlowBox submissionsFlowBox;
 
+    Gtk::Window* window;
+
  public:
-    SubmissionsWidget();
+    explicit SubmissionsWidget(Gtk::Window* window);
 
     void set_credentials(std::shared_ptr<backend::tumexam::Credentials> credentials);
 

@@ -16,7 +16,7 @@
 #include <gtkmm/orientable.h>
 
 namespace ui::widgets {
-SubmissionsWidget::SubmissionsWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) { prep_widget(); }
+SubmissionsWidget::SubmissionsWidget(Gtk::Window* window) : Gtk::Box(Gtk::Orientation::VERTICAL), window(window) { prep_widget(); }
 
 void SubmissionsWidget::set_credentials(std::shared_ptr<backend::tumexam::Credentials> credentials) { this->credentials = std::move(credentials); }
 
@@ -83,7 +83,7 @@ void SubmissionsWidget::update() {
 
 void SubmissionsWidget::add_session_button(std::shared_ptr<backend::tumexam::SubmissionStudent> submission) {
     Gtk::FlowBoxChild child;
-    submissionWidgets.emplace_back(std::move(submission));
+    submissionWidgets.emplace_back(std::move(submission), window);
     child.set_child(submissionWidgets.back());
     submissionFlowBoxWidgets.emplace_back(std::move(child));
     submissionsFlowBox.insert(submissionFlowBoxWidgets.back(), 0);

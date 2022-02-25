@@ -4,7 +4,7 @@
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
 namespace ui::windows {
-MainWindow::MainWindow() {
+MainWindow::MainWindow() : submissions(this) {
     prep_window();
 }
 

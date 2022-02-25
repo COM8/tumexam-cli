@@ -11,7 +11,7 @@
 #include <gtkmm/orientable.h>
 
 namespace ui::widgets {
-SubmissionWidget::SubmissionWidget(std::shared_ptr<backend::tumexam::SubmissionStudent>&& submission) {
+SubmissionWidget::SubmissionWidget(std::shared_ptr<backend::tumexam::SubmissionStudent>&& submission, Gtk::Window* window) : window(window) {
     prep_widget();
     set_submission(std::move(submission));
 }
@@ -25,7 +25,11 @@ void SubmissionWidget::prep_widget() {
 
 void SubmissionWidget::set_submission(std::shared_ptr<backend::tumexam::SubmissionStudent> submission) {
     this->submission = std::move(submission);
-    set_label(this->submission->matrikel);
+    if (this->submission->additional_time_minutes) {
+        set_label("🕗 " + this->submission->matrikel);
+    } else {
+        set_label(this->submission->matrikel);
+    }
     get_css_classes();
 
     for (const Glib::ustring& cssClass : get_css_classes()) {
@@ -53,9 +57,8 @@ void SubmissionWidget::on_clicked() {
 
     assert(submission);
 
-    if (!infoDialog) {
-        infoDialog = std::make_unique<dialogs::SubmissionStudentDialog>(submission);
-    }
+    infoDialog = std::make_unique<dialogs::SubmissionStudentDialog>(submission);
+    infoDialog->set_transient_for(*window);
     infoDialog->show();
     infoDialog->present();
 }
