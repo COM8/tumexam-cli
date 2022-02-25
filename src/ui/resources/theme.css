@@ -53,3 +53,7 @@
 .submission-uploaded-announced:active {
     background-image: image(linear-gradient(to right, darker(darker(@statusGreen)), darker(darker(@statusYellow))));
 }
+
+.submission-none-simple {
+    background-color: alpha(darker(@content_view_bg), 0.7);
+}

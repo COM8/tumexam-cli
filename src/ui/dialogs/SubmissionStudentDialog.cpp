@@ -18,7 +18,7 @@ void SubmissionStudentDialog::prep_dialog() {
     set_size_request(400, 450);
 
     set_child(mainBox);
-    infoLabel.set_valign(Gtk::Align::CENTER);
+    infoLabel.set_halign(Gtk::Align::CENTER);
     infoBar.add_child(infoLabel);
     infoBar.set_message_type(Gtk::MessageType::OTHER);
     mainBox.append(infoBar);
@@ -40,6 +40,7 @@ void SubmissionStudentDialog::prep_dialog() {
             infoLabel.set_label("Downloaded");
         }
     } else {
+        infoBar.add_css_class("submission-none-simple");
         infoLabel.set_label("Not downloaded yet.");
     }
 }
