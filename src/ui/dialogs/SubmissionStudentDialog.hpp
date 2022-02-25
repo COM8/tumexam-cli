@@ -15,6 +15,10 @@ class SubmissionStudentDialog : public Gtk::Dialog {
     std::shared_ptr<backend::tumexam::SubmissionStudent> submission{nullptr};
     Gtk::InfoBar infoBar;
     Gtk::Label infoLabel;
+    Gtk::Label submissionNoteLabel;
+    Gtk::Label submissionTimeLabel;
+    Gtk::Label matrikelLabel;
+    Gtk::Label submissionsLabel;
     Gtk::Box mainBox{Gtk::Orientation::VERTICAL};
 
  public:
