@@ -28,7 +28,6 @@ class SubmissionsWidget : public Gtk::Box {
     Glib::Dispatcher isUpdatingChangedDisp;
     bool shouldUpdateOnce{false};
 
-    std::shared_ptr<backend::tumexam::Credentials> credentials;
     std::unique_ptr<backend::tumexam::Submissions> submissions;
     std::vector<SubmissionWidget> submissionWidgets;
     std::vector<Gtk::FlowBoxChild> submissionFlowBoxWidgets;
@@ -53,8 +52,6 @@ class SubmissionsWidget : public Gtk::Box {
  public:
     explicit SubmissionsWidget(Gtk::Window* window);
     ~SubmissionsWidget() override;
-
-    void set_credentials(std::shared_ptr<backend::tumexam::Credentials> credentials);
 
  private:
     void prep_widget();

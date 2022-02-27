@@ -1,5 +1,6 @@
 #include "SubmissionsWidget.hpp"
 #include "SubmissionWidget.hpp"
+#include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/SubmissionStudent.hpp"
 #include "backend/tumexam/Submissions.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
@@ -26,8 +27,6 @@ SubmissionsWidget::SubmissionsWidget(Gtk::Window* window) : Gtk::Box(Gtk::Orient
 }
 
 SubmissionsWidget::~SubmissionsWidget() { stop_thread(); }
-
-void SubmissionsWidget::set_credentials(std::shared_ptr<backend::tumexam::Credentials> credentials) { this->credentials = std::move(credentials); }
 
 void SubmissionsWidget::prep_widget() {
     Gtk::Box* actionsBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
@@ -133,7 +132,7 @@ void SubmissionsWidget::thread_run() {
 }
 
 void SubmissionsWidget::update_submissions() {
-    if (!credentials) {
+    if (!*(backend::tumexam::get_credentials_instance())) {
         isUpdating = false;
         isUpdatingChangedDisp.emit();
         SPDLOG_WARN("Updating submissions canceled - invalid credentials.");
@@ -143,7 +142,7 @@ void SubmissionsWidget::update_submissions() {
 
     isUpdating = true;
     isUpdatingChangedDisp.emit();
-    std::optional<backend::tumexam::Submissions> subs = backend::tumexam::get_submission_status(*credentials);
+    std::optional<backend::tumexam::Submissions> subs = backend::tumexam::get_submission_status(**(backend::tumexam::get_credentials_instance()));
     submissionsMutex.lock();
     if (subs) {
         submissions = std::make_unique<backend::tumexam::Submissions>(std::move(*subs));
@@ -204,7 +203,7 @@ void SubmissionsWidget::update_is_updating_ui() {
         updateBtn.set_icon_name("view-refresh");
     }
 
-    if (!credentials) {
+    if (!*(backend::tumexam::get_credentials_instance())) {
         updateLbl.set_text(get_cur_time() + " - No valid credentials");
         return;
     }

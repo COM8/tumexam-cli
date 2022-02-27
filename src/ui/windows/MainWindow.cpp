@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 #include "backend/tumexam/Credentials.hpp"
 #include <memory>
+#include <optional>
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
 namespace ui::windows {
@@ -99,13 +100,12 @@ void MainWindow::on_apply_clicked() {
     applySpinner.start();
     applyBtn.set_sensitive(false);
 
-    std::shared_ptr<backend::tumexam::Credentials> credentials = std::make_shared<backend::tumexam::Credentials>(
+    *(backend::tumexam::get_credentials_instance()) = std::make_shared<backend::tumexam::Credentials>(
         std::string{baseUrlEntry.get_buffer()->get_text()},
         std::string{examEntry.get_buffer()->get_text()},
         std::string{sessionEntry.get_buffer()->get_text()},
         std::string{tokenEntry.get_buffer()->get_text()});
 
-    submissions.set_credentials(std::move(credentials));
     applySpinner.stop();
     applyBtn.set_sensitive(true);
 }
