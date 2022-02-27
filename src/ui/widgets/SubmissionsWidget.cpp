@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <gtkmm/adjustment.h>
 #include <gtkmm/box.h>
 #include <gtkmm/enums.h>
@@ -47,8 +48,35 @@ void SubmissionsWidget::prep_widget() {
     updateLbl.set_margin_start(10);
     actionsBox->append(updateLbl);
 
+    Glib::RefPtr<Gtk::CssProvider> cssProvider = Gtk::CssProvider::create();
+    cssProvider->load_from_file(Gio::File::create_for_uri("resource:///ui/theme.css"));
+    statusBox.hide();
+    append(statusBox);
+    countNoneLbl.set_margin_start(10);
+    countNoneLbl.get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    countNoneLbl.add_css_class("submission-none-simple");
+    statusBox.append(countNoneLbl);
+    countDownloadedLbl.set_margin_start(10);
+    countDownloadedLbl.get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    countDownloadedLbl.add_css_class("submission-downloaded-simple");
+    statusBox.append(countDownloadedLbl);
+    countAnnouncedLbl.set_margin_start(10);
+    countAnnouncedLbl.get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    countAnnouncedLbl.add_css_class("submission-announced-simple");
+    statusBox.append(countAnnouncedLbl);
+    countUploadedLbl.set_margin_start(10);
+    countUploadedLbl.get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    countUploadedLbl.add_css_class("submission-uploaded-simple");
+    statusBox.append(countUploadedLbl);
+    countUploadedAnnouncedLbl.set_margin_start(10);
+    countUploadedAnnouncedLbl.set_margin_end(10);
+    countUploadedAnnouncedLbl.get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    countUploadedAnnouncedLbl.add_css_class("submission-uploaded-announced-simple");
+    statusBox.append(countUploadedAnnouncedLbl);
+
     submissionsFlowBox.set_selection_mode(Gtk::SelectionMode::NONE);
     submissionsScroll.set_child(submissionsFlowBox);
+    submissionsScroll.set_margin_top(10);
     submissionsScroll.set_vexpand(true);
     append(submissionsScroll);
 }
@@ -145,11 +173,22 @@ void SubmissionsWidget::update_submissions_ui() {
                       return stateA < stateB;
                   });
         clear_submissions();
+        int countUploadedAnnounced = 0;
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
             add_session_button(submission);
+            if (submission->uploaded && submission->announced) {
+                countUploadedAnnounced++;
+            }
         }
+        countNoneLbl.set_text(" Registered: " + std::to_string(submissions->registrations) + " ");
+        countDownloadedLbl.set_text(" Downloaded: " + std::to_string(submissions->downloaded) + " ");
+        countAnnouncedLbl.set_text(" Announced: " + std::to_string(submissions->announced) + " ");
+        countUploadedLbl.set_text(" Uploaded: " + std::to_string(submissions->uploaded) + " ");
+        countUploadedAnnouncedLbl.set_text(" Uploaded & Announced: " + std::to_string(countUploadedAnnounced) + " ");
+        statusBox.show();
     } else {
         updateLbl.set_text(get_cur_time() + " - No submissions found");
+        statusBox.hide();
     }
     submissionsMutex.unlock();
 }

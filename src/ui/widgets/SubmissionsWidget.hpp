@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 #include <gtkmm.h>
+#include <gtkmm/box.h>
 #include <gtkmm/label.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
@@ -39,6 +40,13 @@ class SubmissionsWidget : public Gtk::Box {
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow submissionsScroll;
     Gtk::FlowBox submissionsFlowBox;
+
+    Gtk::Box statusBox;
+    Gtk::Label countNoneLbl;
+    Gtk::Label countDownloadedLbl;
+    Gtk::Label countAnnouncedLbl;
+    Gtk::Label countUploadedLbl;
+    Gtk::Label countUploadedAnnouncedLbl;
 
     Gtk::Window* window;
 
