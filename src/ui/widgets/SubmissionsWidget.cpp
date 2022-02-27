@@ -7,6 +7,7 @@
 #include "logger/Logger.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/Date.hpp"
+#include "utils/StringUtils.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cstddef>
@@ -45,7 +46,11 @@ void SubmissionsWidget::prep_widget() {
     updateIntervallEntry.set_tooltip_text("Automatic update intervall in seconds");
     actionsBox->append(updateIntervallEntry);
     updateLbl.set_margin_start(10);
+    updateLbl.set_hexpand();
     actionsBox->append(updateLbl);
+    searchEntry.set_margin_start(10);
+    searchEntry.signal_changed().connect(sigc::mem_fun(*this, &SubmissionsWidget::on_search_changed));
+    actionsBox->append(searchEntry);
 
     Glib::RefPtr<Gtk::CssProvider> cssProvider = Gtk::CssProvider::create();
     cssProvider->load_from_file(Gio::File::create_for_uri("resource:///ui/theme.css"));
@@ -146,6 +151,16 @@ void SubmissionsWidget::update_submissions() {
     submissionsMutex.lock();
     if (subs) {
         submissions = std::make_unique<backend::tumexam::Submissions>(std::move(*subs));
+        // Sort submissions:
+        std::sort(submissions->students.begin(), submissions->students.end(),
+                  [](const std::shared_ptr<backend::tumexam::SubmissionStudent>& a, const std::shared_ptr<backend::tumexam::SubmissionStudent>& b) {
+                      int stateA = a->get_state();
+                      int stateB = b->get_state();
+                      if (stateA == stateB) {
+                          return !(a->additional_time_minutes.has_value()) && b->additional_time_minutes.has_value();
+                      }
+                      return stateA < stateB;
+                  });
         SPDLOG_INFO("Found {} student submissions.", submissions->students.size());
     } else {
         submissions = nullptr;
@@ -161,28 +176,38 @@ void SubmissionsWidget::update_submissions_ui() {
     submissionsMutex.lock();
     if (submissions) {
         updateLbl.set_text(get_cur_time() + " - Success");
-        // Sort submissions:
-        std::sort(submissions->students.begin(), submissions->students.end(),
-                  [](const std::shared_ptr<backend::tumexam::SubmissionStudent>& a, const std::shared_ptr<backend::tumexam::SubmissionStudent>& b) {
-                      int stateA = a->get_state();
-                      int stateB = b->get_state();
-                      if (stateA == stateB) {
-                          return !(a->additional_time_minutes.has_value()) && b->additional_time_minutes.has_value();
-                      }
-                      return stateA < stateB;
-                  });
         clear_submissions();
+        int countRegistrations = 0;
+        int countDownloaded = 0;
+        int countAnnounced = 0;
+        int countUploaded = 0;
         int countUploadedAnnounced = 0;
+        const std::string filter = utils::to_lower_clean(searchEntry.get_text());
+        std::string_view filterSv = filter;
+        utils::trim(filterSv);
+
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
-            add_session_button(submission);
-            if (submission->uploaded && submission->announced) {
-                countUploadedAnnounced++;
+            if (filterSv.empty() || utils::to_lower_clean(submission->matrikel).find(filterSv) != std::string::npos) {
+                add_session_button(submission);
+                countRegistrations++;
+                if (submission->downloaded) {
+                    countDownloaded++;
+                }
+                if (submission->announced) {
+                    countAnnounced++;
+                    if (submission->uploaded) {
+                        countUploadedAnnounced++;
+                    }
+                }
+                if (submission->uploaded) {
+                    countUploaded++;
+                }
             }
         }
-        countNoneLbl.set_text(" Registered: " + std::to_string(submissions->registrations) + " ");
-        countDownloadedLbl.set_text(" Downloaded: " + std::to_string(submissions->downloaded) + " ");
-        countAnnouncedLbl.set_text(" Announced: " + std::to_string(submissions->announced) + " ");
-        countUploadedLbl.set_text(" Uploaded: " + std::to_string(submissions->uploaded) + " ");
+        countNoneLbl.set_text(" Registered: " + std::to_string(countRegistrations) + " ");
+        countDownloadedLbl.set_text(" Downloaded: " + std::to_string(countDownloaded) + " ");
+        countAnnouncedLbl.set_text(" Announced: " + std::to_string(countAnnounced) + " ");
+        countUploadedLbl.set_text(" Uploaded: " + std::to_string(countUploaded) + " ");
         countUploadedAnnouncedLbl.set_text(" Uploaded & Announced: " + std::to_string(countUploadedAnnounced) + " ");
         statusBox.show();
     } else {
@@ -218,4 +243,5 @@ void SubmissionsWidget::on_update_clicked() {
 //-----------------------------Events:-----------------------------
 void SubmissionsWidget::on_notification_from_update_thread() { update_submissions_ui(); }
 void SubmissionsWidget::on_is_updating_changed_from_thread() { update_is_updating_ui(); }
+void SubmissionsWidget::on_search_changed() { update_submissions_ui(); }
 }  // namespace ui::widgets

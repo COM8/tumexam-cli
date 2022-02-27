@@ -12,6 +12,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
+#include <gtkmm/searchentry.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/spinner.h>
 #include <gtkmm/switch.h>
@@ -35,6 +36,7 @@ class SubmissionsWidget : public Gtk::Box {
     Gtk::Button updateBtn;
     Gtk::Spinner updatingSpinner;
     Gtk::Label updateLbl;
+    Gtk::SearchEntry searchEntry;
     Gtk::SpinButton updateIntervallEntry;
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow submissionsScroll;
@@ -71,5 +73,6 @@ class SubmissionsWidget : public Gtk::Box {
     void on_notification_from_update_thread();
     void on_is_updating_changed_from_thread();
     void on_update_clicked();
+    void on_search_changed();
 };
 }  // namespace ui::widgets
