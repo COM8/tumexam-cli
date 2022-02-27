@@ -137,7 +137,12 @@ void SubmissionsWidget::update_submissions_ui() {
         // Sort submissions:
         std::sort(submissions->students.begin(), submissions->students.end(),
                   [](const std::shared_ptr<backend::tumexam::SubmissionStudent>& a, const std::shared_ptr<backend::tumexam::SubmissionStudent>& b) {
-                      return a->get_state() < b->get_state();
+                      int stateA = a->get_state();
+                      int stateB = b->get_state();
+                      if (stateA == stateB) {
+                          return !(a->additional_time_minutes.has_value()) && b->additional_time_minutes.has_value();
+                      }
+                      return stateA < stateB;
                   });
         clear_submissions();
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
