@@ -30,17 +30,20 @@ SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
     if (!j.contains("additionalTimeMinutes")) {
         throw std::runtime_error("Failed to parse SubmissionStudent. 'additionalTimeMinutes' filed missing.");
     }
-    std::optional<int> additional_time_minutes;
+    std::optional<int> additional_time_minutes = std::nullopt;
     if (!j.at("additionalTimeMinutes").is_null()) {
-        j.at("additionalTimeMinutes").get_to(*additional_time_minutes);
+        int i = 0;
+        j.at("additionalTimeMinutes").get_to(i);
+        additional_time_minutes = std::make_optional<int>(i);
     }
 
     if (!j.contains("exam")) {
         throw std::runtime_error("Failed to parse SubmissionStudent. 'exam' filed missing.");
     }
-    std::optional<ExamSubmissionDetails> exam_submission_details;
+    std::optional<ExamSubmissionDetails> exam_submission_details = std::nullopt;
     if (!j.at("exam").is_null()) {
-        exam_submission_details = ExamSubmissionDetails::from_json(j.at("exam"));
+        ExamSubmissionDetails exDetails = ExamSubmissionDetails::from_json(j.at("exam"));
+        exam_submission_details = std::make_optional<ExamSubmissionDetails>(exDetails);
     }
 
     if (!j.contains("matrikel")) {
