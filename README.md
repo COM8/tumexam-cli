@@ -5,12 +5,12 @@ C++ client for https://tumexam.de/ to manage students and exams.
 
 ### Fedora
 ```
-sudo dnf install libcurl-devel gcc cmake git
+sudo dnf install gtk4mm-devel libcurl-devel gcc cmake git
 ```
 
 ### Debian/Ubuntu
 ```
-sudo apt install libcurl4-openssl-dev gcc cmake git
+sudo apt install libgtkmm-4.0-dev libcurl4-openssl-dev gcc cmake git
 ```
 
 ## Building
