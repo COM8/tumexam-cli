@@ -57,7 +57,7 @@ class SubmissionsWidget : public Gtk::Box {
 
  private:
     void prep_widget();
-    void add_session_button(std::shared_ptr<backend::tumexam::SubmissionStudent> submission);
+    void add_submission_button(std::shared_ptr<backend::tumexam::SubmissionStudent> submission);
     void clear_submissions();
     static std::string get_cur_time();
 
@@ -68,6 +68,7 @@ class SubmissionsWidget : public Gtk::Box {
     void update_submissions();
     void update_submissions_ui();
     void update_is_updating_ui();
+    void filter_submissions();
 
     //-----------------------------Events:-----------------------------
     void on_notification_from_update_thread();
