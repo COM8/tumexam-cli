@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ui/widgets/CorrectionStatusWidget.hpp"
 #include "ui/widgets/SubmissionsWidget.hpp"
 #include <gtkmm.h>
 #include <gtkmm/button.h>
@@ -17,6 +18,7 @@ class MainWindow : public Gtk::Window {
     Gtk::Button applyBtn;
     Gtk::Spinner applySpinner;
     widgets::SubmissionsWidget submissions;
+    widgets::CorrectionStatusWidget correctionStatus;
 
  public:
     MainWindow();
@@ -25,6 +27,7 @@ class MainWindow : public Gtk::Window {
     void prep_window();
     void prep_connect(Gtk::Stack* stack);
     void prep_submission(Gtk::Stack* stack);
+    void prep_correction(Gtk::Stack* stack);
 
     //-----------------------------Events:-----------------------------
     void on_inspector_clicked();

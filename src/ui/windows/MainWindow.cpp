@@ -17,6 +17,7 @@ void MainWindow::prep_window() {
     Gtk::Stack* stack = Gtk::make_managed<Gtk::Stack>();
     prep_connect(stack);
     prep_submission(stack);
+    prep_correction(stack);
     set_child(*stack);
 
     // Header bar:
@@ -89,6 +90,8 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
 }
 
 void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "Submission"); }
+
+void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatus, "correction", "Correction"); }
 
 //-----------------------------Events:-----------------------------
 void MainWindow::on_inspector_clicked() {
