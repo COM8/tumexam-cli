@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <cairomm/context.h>
+#include <pangomm/fontdescription.h>
 
 namespace ui::widgets {
 CorrectionStatusBarWidget::CorrectionStatusBarWidget() {
@@ -43,35 +44,57 @@ void CorrectionStatusBarWidget::update_tooltip() {
     set_tooltip_markup(tooltip);
 }
 //-----------------------------Events:-----------------------------
-// NOLINTNEXTLINE (readability-convert-member-functions-to-static)
 void CorrectionStatusBarWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) {
+    ctx->save();
     ctx->rectangle(0, 0, width, height);
     ctx->set_source_rgba(BACKGROUND_COLOR.get_red(), BACKGROUND_COLOR.get_green(), BACKGROUND_COLOR.get_blue(), BACKGROUND_COLOR.get_alpha());
     ctx->fill();
 
     if (!correctionStatus) {
         ctx->restore();
-        SPDLOG_DEBUG("Skipped drawing");
         return;
     }
-    SPDLOG_DEBUG("Drawing {}", correctionStatus->problem);
+
+    std::string text;
 
     // Pass 1:
-    if (correctionStatus->pass1) {
-        double fractionCorrected = static_cast<double>(correctionStatus->pass1->corrected) / correctionStatus->pass1->total;
-        double drawWidth = static_cast<double>(width) * fractionCorrected;
-        ctx->rectangle(0, 0, drawWidth, height);
-        ctx->set_source_rgba(FOREGROUND_PASS_1_COLOR.get_red(), FOREGROUND_PASS_1_COLOR.get_green(), FOREGROUND_PASS_1_COLOR.get_blue(), FOREGROUND_PASS_1_COLOR.get_alpha());
-        ctx->fill();
-    }
+    double fractionCorrected = static_cast<double>(correctionStatus->pass1->corrected) / correctionStatus->pass1->total;
+    double drawWidth = static_cast<double>(width) * fractionCorrected;
+    ctx->rectangle(0, 0, drawWidth, height);
+    ctx->set_source_rgba(FOREGROUND_PASS_1_COLOR.get_red(), FOREGROUND_PASS_1_COLOR.get_green(), FOREGROUND_PASS_1_COLOR.get_blue(), FOREGROUND_PASS_1_COLOR.get_alpha());
+    ctx->fill();
+    text += std::to_string(correctionStatus->pass1->corrected) + "/";
 
     // Pass 2:
     if (correctionStatus->pass2) {
-        double fractionCorrected = static_cast<double>(correctionStatus->pass2->corrected) / correctionStatus->pass2->total;
-        double drawWidth = static_cast<double>(width) * fractionCorrected;
+        fractionCorrected = static_cast<double>(correctionStatus->pass2->corrected) / correctionStatus->pass2->total;
+        drawWidth = static_cast<double>(width) * fractionCorrected;
         ctx->rectangle(0, 0, drawWidth, height);
         ctx->set_source_rgba(FOREGROUND_PASS_2_COLOR.get_red(), FOREGROUND_PASS_2_COLOR.get_green(), FOREGROUND_PASS_2_COLOR.get_blue(), FOREGROUND_PASS_2_COLOR.get_alpha());
         ctx->fill();
+        text += std::to_string(correctionStatus->pass2->corrected) + "/" + std::to_string(correctionStatus->pass1->total);
+    } else {
+        text += std::to_string(correctionStatus->pass1->total);
     }
+    ctx->restore();
+
+    draw_text(text, ctx, static_cast<double>(width), static_cast<double>(height));
+}
+
+void CorrectionStatusBarWidget::draw_text(const std::string& text, const Cairo::RefPtr<Cairo::Context>& ctx, double width, double height) {
+    Pango::FontDescription font;
+    font.set_weight(Pango::Weight::BOLD);
+    Glib::RefPtr<Pango::Layout> layout = create_pango_layout(text);
+    layout->set_font_description(font);
+    int textWidth = 0;
+    int textHeight = 0;
+    layout->get_pixel_size(textWidth, textHeight);
+    ctx->move_to((static_cast<double>(width) - textWidth) / 2, (static_cast<double>(height) - textHeight) / 2);
+    layout->add_to_cairo_context(ctx);
+    ctx->set_source_rgb(1, 1, 1);
+    ctx->fill_preserve();
+    ctx->set_source_rgb(0, 0, 0);
+    ctx->set_line_width(0.3);
+    ctx->stroke();
 }
 }  // namespace ui::widgets

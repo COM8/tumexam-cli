@@ -23,6 +23,8 @@ class CorrectionStatusBarWidget : public Gtk::DrawingArea {
     void prep_widget();
     void update_tooltip();
 
+    void draw_text(const std::string& text, const Cairo::RefPtr<Cairo::Context>& ctx, double width, double height);
+
     //-----------------------------Events:-----------------------------
     void on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height);
 };
