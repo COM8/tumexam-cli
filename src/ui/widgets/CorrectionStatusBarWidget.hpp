@@ -9,10 +9,9 @@ namespace ui::widgets {
 class CorrectionStatusBarWidget : public Gtk::DrawingArea {
  private:
     std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus{nullptr};
-    const Gdk::RGBA BACKGROUND_COLOR{"rgba(119,119,119,128)"};
-    const Gdk::RGBA FOREGROUND_PASS_1_COLOR{"#ef0000"};
-    const Gdk::RGBA FOREGROUND_PASS_2_COLOR{"#008b00"};
-    const Gdk::RGBA FOREGROUND_PASS_MISC_COLOR{"#c000ff"};
+    const Gdk::RGBA BACKGROUND_COLOR{"#5e5c64"};
+    const Gdk::RGBA FOREGROUND_PASS_1_COLOR{"#a51d2d"};
+    const Gdk::RGBA FOREGROUND_PASS_2_COLOR{"#26a269"};
 
  public:
     CorrectionStatusBarWidget();
