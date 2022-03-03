@@ -13,6 +13,7 @@
 #include <vector>
 #include <gtkmm.h>
 #include <gtkmm/box.h>
+#include <gtkmm/checkbutton.h>
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
 #include <gtkmm/progressbar.h>
@@ -44,6 +45,7 @@ class CorrectionStatusListWidget : public Gtk::Box {
     Gtk::Spinner updatingSpinner;
     Gtk::Label updateLbl;
     Gtk::SpinButton updateIntervallEntry;
+    Gtk::CheckButton subproblemChBtn;
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow correctionStatusScroll;
 

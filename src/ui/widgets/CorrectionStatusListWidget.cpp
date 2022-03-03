@@ -32,6 +32,9 @@ void CorrectionStatusListWidget::prep_widget() {
     updateIntervallEntry.set_adjustment(Gtk::Adjustment::create(5, 1, 600, 1, 10));
     updateIntervallEntry.set_tooltip_text("Automatic update intervall in seconds");
     actionsBox->append(updateIntervallEntry);
+    actionsBox->append(subproblemChBtn);
+    subproblemChBtn.set_label("Subproblems");
+    subproblemChBtn.set_margin_start(10);
     updateLbl.set_margin_start(10);
     actionsBox->append(updateLbl);
 
@@ -89,7 +92,7 @@ void CorrectionStatusListWidget::update_correction_status() {
 
     isUpdating = true;
     isUpdatingChangedDisp.emit();
-    std::vector<std::shared_ptr<backend::tumexam::CorrectionStatus>> status = backend::tumexam::get_correction_status(**(backend::tumexam::get_credentials_instance()), false);
+    std::vector<std::shared_ptr<backend::tumexam::CorrectionStatus>> status = backend::tumexam::get_correction_status(**(backend::tumexam::get_credentials_instance()), subproblemChBtn.get_active());
     if (status.empty()) {
         submissionsMutex.lock();
         correctionStatus.clear();
