@@ -17,7 +17,9 @@ add_library(backend_tumexam STATIC TUMExamHelper.cpp
                                    Credentials.cpp
                                    Credentials.hpp
                                    CorrectionStatus.cpp
-                                   CorrectionStatus.hpp)
+                                   CorrectionStatus.hpp
+                                   CorrectionPass.cpp
+                                   CorrectionPass.hpp)
 
 target_link_libraries(backend_tumexam PRIVATE logger cpr::cpr utils
                                       PUBLIC nlohmann_json::nlohmann_json)

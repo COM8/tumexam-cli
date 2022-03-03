@@ -6,6 +6,10 @@ add_library(ui_widgets STATIC SubmissionsWidget.cpp
                               SubmissionWidget.hpp
                               SubmissionDetailsWidget.cpp
                               SubmissionDetailsWidget.hpp
+                              CorrectionStatusListWidget.cpp
+                              CorrectionStatusListWidget.hpp
+                              CorrectionStatusBarWidget.cpp
+                              CorrectionStatusBarWidget.hpp
                               CorrectionStatusWidget.cpp
                               CorrectionStatusWidget.hpp)
 

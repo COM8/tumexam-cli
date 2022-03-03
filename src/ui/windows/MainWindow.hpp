@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/widgets/CorrectionStatusWidget.hpp"
+#include "ui/widgets/CorrectionStatusListWidget.hpp"
 #include "ui/widgets/SubmissionsWidget.hpp"
 #include <gtkmm.h>
 #include <gtkmm/button.h>
@@ -18,7 +18,7 @@ class MainWindow : public Gtk::Window {
     Gtk::Button applyBtn;
     Gtk::Spinner applySpinner;
     widgets::SubmissionsWidget submissions;
-    widgets::CorrectionStatusWidget correctionStatus;
+    widgets::CorrectionStatusListWidget correctionStatus;
 
  public:
     MainWindow();

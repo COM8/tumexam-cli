@@ -5,7 +5,7 @@
 namespace backend::tumexam {
 std::chrono::system_clock::time_point parse_time(const nlohmann::json& j, const std::string& name, const std::string& class_name) {
     if (!j.contains(name)) {
-        throw std::runtime_error("Failed to parse " + class_name + ". '" + name + "' filed missing.");
+        throw std::runtime_error("Failed to parse " + class_name + ". '" + name + "' field missing.");
     }
     if (j.at(name).is_null()) {
         return std::chrono::system_clock::time_point::min();

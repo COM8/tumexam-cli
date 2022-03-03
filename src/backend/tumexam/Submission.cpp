@@ -6,19 +6,19 @@
 namespace backend::tumexam {
 Submission Submission::from_json(const nlohmann::json& j) {
     if (!j.contains("announced")) {
-        throw std::runtime_error("Failed to parse Submission. 'announced' filed missing.");
+        throw std::runtime_error("Failed to parse Submission. 'announced' field missing.");
     }
     bool announced = false;
     j.at("announced").get_to(announced);
 
     if (!j.contains("uploaded")) {
-        throw std::runtime_error("Failed to parse Submission. 'uploaded' filed missing.");
+        throw std::runtime_error("Failed to parse Submission. 'uploaded' field missing.");
     }
     bool uploaded = false;
     j.at("uploaded").get_to(uploaded);
 
     if (!j.contains("path")) {
-        throw std::runtime_error("Failed to parse Submission. 'path' filed missing.");
+        throw std::runtime_error("Failed to parse Submission. 'path' field missing.");
     }
     std::string path;
     if (!j.at("path").is_null()) {
@@ -26,7 +26,7 @@ Submission Submission::from_json(const nlohmann::json& j) {
     }
 
     if (!j.contains("metadata")) {
-        throw std::runtime_error("Failed to parse Submission. 'metadata' filed missing.");
+        throw std::runtime_error("Failed to parse Submission. 'metadata' field missing.");
     }
     if (!j.at("metadata").is_array()) {
         throw std::runtime_error("Failed to parse Submission. 'metadata' is no array.");

@@ -10,25 +10,25 @@
 namespace backend::tumexam {
 SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
     if (!j.contains("announced")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'announced' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'announced' field missing.");
     }
     bool announced = false;
     j.at("announced").get_to(announced);
 
     if (!j.contains("downloaded")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'downloaded' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'downloaded' field missing.");
     }
     bool downloaded = false;
     j.at("downloaded").get_to(downloaded);
 
     if (!j.contains("uploaded")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'uploaded' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'uploaded' field missing.");
     }
     bool uploaded = false;
     j.at("uploaded").get_to(uploaded);
 
     if (!j.contains("additionalTimeMinutes")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'additionalTimeMinutes' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'additionalTimeMinutes' field missing.");
     }
     std::optional<int> additional_time_minutes = std::nullopt;
     if (!j.at("additionalTimeMinutes").is_null()) {
@@ -38,7 +38,7 @@ SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
     }
 
     if (!j.contains("exam")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'exam' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'exam' field missing.");
     }
     std::optional<ExamSubmissionDetails> exam_submission_details = std::nullopt;
     if (!j.at("exam").is_null()) {
@@ -47,13 +47,13 @@ SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
     }
 
     if (!j.contains("matrikel")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'matrikel' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'matrikel' field missing.");
     }
     std::string matrikel;
     j.at("matrikel").get_to(matrikel);
 
     if (!j.contains("submissionNote")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'submissionNote' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'submissionNote' field missing.");
     }
     std::string submissionNote;
     if (!j.at("submissionNote").is_null()) {
@@ -61,7 +61,7 @@ SubmissionStudent SubmissionStudent::from_json(const nlohmann::json& j) {
     }
 
     if (!j.contains("submissions")) {
-        throw std::runtime_error("Failed to parse SubmissionStudent. 'submissions' filed missing.");
+        throw std::runtime_error("Failed to parse SubmissionStudent. 'submissions' field missing.");
     }
     if (!j.at("submissions").is_array()) {
         throw std::runtime_error("Failed to parse SubmissionStudent. 'submissions' is no array.");

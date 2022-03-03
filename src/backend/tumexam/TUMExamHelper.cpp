@@ -1,9 +1,11 @@
 #include "TUMExamHelper.hpp"
+#include "backend/tumexam/CorrectionPass.hpp"
 #include "backend/tumexam/CorrectionStatus.hpp"
 #include "backend/tumexam/Submissions.hpp"
 #include "cpr/cprtypes.h"
 #include "spdlog/spdlog.h"
 #include <logger/Logger.hpp>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <vector>
@@ -34,11 +36,36 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
         try {
             const nlohmann::json j = nlohmann::json::parse(r.text);
             nlohmann::json::array_t status_array = j;
-            std::vector<std::shared_ptr<CorrectionStatus>> status;
+            std::vector<std::shared_ptr<CorrectionStatus>> correctionStatus;
             for (const nlohmann::json& jStatus : status_array) {
-                status.emplace_back(std::make_shared<CorrectionStatus>(CorrectionStatus::from_json(jStatus)));
+                CorrectionStatus newStatus = CorrectionStatus::from_json(jStatus);
+                CorrectionPass pass = CorrectionPass::from_json(jStatus);
+
+                // Check if the problem/subproblem is already known:
+                std::shared_ptr<CorrectionStatus> status{nullptr};
+                for (std::shared_ptr<CorrectionStatus>& s : correctionStatus) {
+                    if (*s == newStatus) {
+                        status = s;
+                        break;
+                    }
+                }
+
+                // New problem/subproblem:
+                if (!status) {
+                    correctionStatus.push_back(std::make_shared<CorrectionStatus>(newStatus));
+                    status = correctionStatus.back();
+                }
+
+                // Update correction pass:
+                if (pass.pass == 1) {
+                    status->pass1 = pass;
+                } else if (pass.pass == 2) {
+                    status->pass2 = pass;
+                } else {
+                    SPDLOG_ERROR("Unknown correction pass '{}' found.", pass.pass);
+                }
             }
-            return status;
+            return correctionStatus;
 
         } catch (const std::exception& e) {
             SPDLOG_ERROR("Failed to parse submission status with: {}", e.what());
