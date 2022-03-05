@@ -26,7 +26,6 @@ void CorrectionStatusListWidget::prep_widget() {
     actionsBox->append(updateBtn);
     autoUpdateSwitch.set_tooltip_text("Enable automatic updates");
     autoUpdateSwitch.set_margin_start(10);
-    autoUpdateSwitch.set_active(true);
     actionsBox->append(autoUpdateSwitch);
     updateIntervallEntry.set_margin_start(10);
     updateIntervallEntry.set_adjustment(Gtk::Adjustment::create(5, 1, 600, 1, 10));
