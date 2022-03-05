@@ -30,7 +30,7 @@ void CorrectionStatusBarWidget::update_tooltip() {
     std::string tooltip;
     if (correctionStatus->pass1) {
         int percent = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass1->corrected) / correctionStatus->pass1->total) * 100));
-        tooltip += "<span font_weight='bold' foreground='#ef0000'>Pass 1:</span> " + std::to_string(correctionStatus->pass1->corrected) + " out of " + std::to_string(correctionStatus->pass1->total) + " - " + std::to_string(percent) + "%";
+        tooltip += "<span font_weight='bold' foreground='#a51d2d'>Pass 1:</span> " + std::to_string(correctionStatus->pass1->corrected) + " out of " + std::to_string(correctionStatus->pass1->total) + " - " + std::to_string(percent) + "%";
     }
 
     if (correctionStatus->pass2) {
@@ -39,7 +39,7 @@ void CorrectionStatusBarWidget::update_tooltip() {
         }
 
         int percent = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass2->corrected) / correctionStatus->pass2->total) * 100));
-        tooltip += "<span font_weight='bold' foreground='#008b00'>Pass 2:</span> " + std::to_string(correctionStatus->pass2->corrected) + " out of " + std::to_string(correctionStatus->pass2->total) + " - " + std::to_string(percent) + '%';
+        tooltip += "<span font_weight='bold' foreground='#24634c'>Pass 2:</span> " + std::to_string(correctionStatus->pass2->corrected) + " out of " + std::to_string(correctionStatus->pass2->total) + " - " + std::to_string(percent) + '%';
     }
     set_tooltip_markup(tooltip);
 }

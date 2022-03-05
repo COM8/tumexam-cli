@@ -1,6 +1,6 @@
-@define-color statusGreen rgba(38,162,105, 0.5);
-@define-color statusYellow rgba(205,147,9, 0.5);
-@define-color statusBlue rgba(120,174,237, 0.5);
+@define-color statusGreen rgba(38,162,105, 0.7);
+@define-color statusYellow rgba(205,147,9, 0.7);
+@define-color statusBlue rgba(120,174,237, 0.7);
 
 .submission-downloaded-simple {
     background-color: @statusBlue;
