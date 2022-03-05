@@ -32,5 +32,6 @@ class MainWindow : public Gtk::Window {
     //-----------------------------Events:-----------------------------
     void on_inspector_clicked();
     void on_apply_clicked();
+    bool on_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state);
 };
 }  // namespace ui::windows

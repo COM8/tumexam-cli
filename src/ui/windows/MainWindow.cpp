@@ -2,7 +2,11 @@
 #include "backend/tumexam/Credentials.hpp"
 #include <memory>
 #include <optional>
+#include <gdk/gdkkeysyms.h>
+#include <glibmm/refptr.h>
 #include <gtkmm/enums.h>
+#include <gtkmm/eventcontroller.h>
+#include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/label.h>
 namespace ui::windows {
 MainWindow::MainWindow() : submissions(this) {
@@ -12,6 +16,11 @@ MainWindow::MainWindow() : submissions(this) {
 void MainWindow::prep_window() {
     set_title("TUMexam Client");
     set_default_size(800, 550);
+
+    // Keyboard events:
+    Glib::RefPtr<Gtk::EventControllerKey> controller = Gtk::EventControllerKey::create();
+    controller->signal_key_pressed().connect(sigc::mem_fun(*this, &MainWindow::on_key_pressed), false);
+    add_controller(controller);
 
     // Content:
     Gtk::Stack* stack = Gtk::make_managed<Gtk::Stack>();
@@ -68,6 +77,7 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     sessionLbl->set_margin_top(10);
     box->append(*sessionLbl);
     sessionEntry.set_placeholder_text("TUMexam session");
+    sessionEntry.get_buffer()->set_text("eyJfZnJlc2giOmZhbHNlLCJjc3JmX3Rva2VuIjoiZGQyYjg4NDhlY2IwOWU5MDMyY2EyM2NlZTM5ZjNlNjA3MTU4YmY1MyJ9.YiB7qg.DR8SA7sqf-5-ZjGkN-HwZlE8EGc");
     box->append(sessionEntry);
 
     Gtk::Label* tokenLbl = Gtk::make_managed<Gtk::Label>("Token");
@@ -75,6 +85,7 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     tokenLbl->set_margin_top(10);
     box->append(*tokenLbl);
     tokenEntry.set_placeholder_text("TUMexam login token");
+    tokenEntry.get_buffer()->set_text("eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOiJnYTg3cWlwIiwic2hvcnRuYW1lIjoiMjAyMXdzLWluLWdicyIsImZpcnN0bmFtZSI6IkZhYmlhbiIsImxhc3RuYW1lIjoiU2F1dGVyIiwiaWF0IjoxNjQ2Mjk1OTc3LCJuYmYiOjE2NDYyOTU5NzcsImV4cCI6MTY0NjMzOTE3N30.vKvOGFMBJJUmSlFfPAAnBPIz0otd6M-h2uzsdOVFxnZaXYw5ronVU7-aL75ExoZdUxivpo-eF9DQDaXChFZ_9VBPLvXawYbZEJRXqovDYYjuDU7qE5FLBKDXtw_UQeuH60Mq__FHlqvWCHC7b5amzssxh56-zufxaMcH0jLs5CblFONFod8l4UEP8gtdj04oxLXW67_BPFnXjJiit5jq5a_4TddbU130_ernB_hNOvveYiG_SzrrPJk3lNpIr-rGlJzOhj0bsbz3HdIugKWpA6j9DnP5JNreRdz4Nu2NeDK0b1B_ehVMgAER3_mjsqM6eYWgug0zy_-FlgHSKkkuIKX50-RDFtqjcUBUrvdQtsAs5ceR4hIZEBj2W6z7eZbbeYCeMlbwyd2HjjFizkbsM6_GGsshukSzgH4FN9WTuulV2BzXhaSKfDtkLCMsvmcAWZB94FU4O9kW7CUTwVYed9jlsxPVD-t4OHOK9rf_X0t83YUieCBHBHGcrHp00V_l6155o00m-_lDJNNpQ3P8GauOWpUkR_GvM9tT7P_IMInQrjOfqJdsFZvuPJIMcO89bqD8QBx6t2D53QtpH3WvsuJRaNUNK2-x7dsRggk2OWUAY2rjFRTHhC2KWxMaXNbcXFUeDkwuRS0mxS_fjHoXBQSMFRcVqdpDkkrbvJ7p_Ho");
     box->append(tokenEntry);
 
     Gtk::Box* applyBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
@@ -111,5 +122,21 @@ void MainWindow::on_apply_clicked() {
 
     applySpinner.stop();
     applyBtn.set_sensitive(true);
+}
+
+bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierType /*state*/) {
+    if (keyval == GDK_KEY_F11) {
+        if (is_fullscreen()) {
+            unfullscreen();
+        } else {
+            fullscreen();
+        }
+        return true;
+    }
+    if (keyval == GDK_KEY_Escape && is_fullscreen()) {
+        unfullscreen();
+        return true;
+    }
+    return false;
 }
 }  // namespace ui::windows
