@@ -77,7 +77,6 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     sessionLbl->set_margin_top(10);
     box->append(*sessionLbl);
     sessionEntry.set_placeholder_text("TUMexam session");
-    sessionEntry.get_buffer()->set_text("eyJfZnJlc2giOmZhbHNlLCJjc3JmX3Rva2VuIjoiZGQyYjg4NDhlY2IwOWU5MDMyY2EyM2NlZTM5ZjNlNjA3MTU4YmY1MyJ9.YiB7qg.DR8SA7sqf-5-ZjGkN-HwZlE8EGc");
     box->append(sessionEntry);
 
     Gtk::Label* tokenLbl = Gtk::make_managed<Gtk::Label>("Token");
@@ -85,7 +84,6 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     tokenLbl->set_margin_top(10);
     box->append(*tokenLbl);
     tokenEntry.set_placeholder_text("TUMexam login token");
-    tokenEntry.get_buffer()->set_text("eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOiJnYTg3cWlwIiwic2hvcnRuYW1lIjoiMjAyMXdzLWluLWdicyIsImZpcnN0bmFtZSI6IkZhYmlhbiIsImxhc3RuYW1lIjoiU2F1dGVyIiwiaWF0IjoxNjQ2Mjk1OTc3LCJuYmYiOjE2NDYyOTU5NzcsImV4cCI6MTY0NjMzOTE3N30.vKvOGFMBJJUmSlFfPAAnBPIz0otd6M-h2uzsdOVFxnZaXYw5ronVU7-aL75ExoZdUxivpo-eF9DQDaXChFZ_9VBPLvXawYbZEJRXqovDYYjuDU7qE5FLBKDXtw_UQeuH60Mq__FHlqvWCHC7b5amzssxh56-zufxaMcH0jLs5CblFONFod8l4UEP8gtdj04oxLXW67_BPFnXjJiit5jq5a_4TddbU130_ernB_hNOvveYiG_SzrrPJk3lNpIr-rGlJzOhj0bsbz3HdIugKWpA6j9DnP5JNreRdz4Nu2NeDK0b1B_ehVMgAER3_mjsqM6eYWgug0zy_-FlgHSKkkuIKX50-RDFtqjcUBUrvdQtsAs5ceR4hIZEBj2W6z7eZbbeYCeMlbwyd2HjjFizkbsM6_GGsshukSzgH4FN9WTuulV2BzXhaSKfDtkLCMsvmcAWZB94FU4O9kW7CUTwVYed9jlsxPVD-t4OHOK9rf_X0t83YUieCBHBHGcrHp00V_l6155o00m-_lDJNNpQ3P8GauOWpUkR_GvM9tT7P_IMInQrjOfqJdsFZvuPJIMcO89bqD8QBx6t2D53QtpH3WvsuJRaNUNK2-x7dsRggk2OWUAY2rjFRTHhC2KWxMaXNbcXFUeDkwuRS0mxS_fjHoXBQSMFRcVqdpDkkrbvJ7p_Ho");
     box->append(tokenEntry);
 
     Gtk::Box* applyBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
