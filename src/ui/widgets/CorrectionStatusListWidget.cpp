@@ -133,7 +133,16 @@ void CorrectionStatusListWidget::update_correction_status_ui() {
     } else {
         // Update:
         for (const std::shared_ptr<backend::tumexam::CorrectionStatus>& status : correctionStatus) {
-            update_correction_status(status);
+            // One problem was not found. Happens when the subproblem and problem view have the same amount of objects.
+            if (!update_correction_status(status)) {
+                // Clear
+                for (CorrectionStatusWidget* widget : correctionStatusWidgets) {
+                    correctionStatusBox.remove(*widget);
+                }
+                correctionStatusWidgets.clear();
+                submissionsMutex.unlock();
+                update_correction_status_ui();
+            }
         }
     }
     assert(correctionStatusWidgets.size() == correctionStatus.size());
@@ -169,14 +178,14 @@ void CorrectionStatusListWidget::on_update_clicked() {
     update_is_updating_ui();
 }
 
-void CorrectionStatusListWidget::update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus) {
+bool CorrectionStatusListWidget::update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus) {
     for (CorrectionStatusWidget* correctionStatusWidget : correctionStatusWidgets) {
         if (*(correctionStatusWidget->get_correction_status()) == *correctionStatus) {
             correctionStatusWidget->set_correction_status(std::move(correctionStatus));
-            return;
+            return true;
         }
     }
-    assert(false);  // Should not happen
+    return false;
 }
 
 //-----------------------------Events:-----------------------------

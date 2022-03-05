@@ -31,6 +31,20 @@ CorrectionPass CorrectionPass::from_json(const nlohmann::json& j) {
         pass,
         total,
         available,
-        corrected};
+        corrected,
+        corrected,
+        1};
+}
+
+CorrectionPass& CorrectionPass::operator+=(const CorrectionPass& other) {
+    corrected += other.corrected;
+    if (available < other.available) {
+        available = other.available;
+    }
+    if (corrected_min > other.corrected_min) {
+        corrected_min = other.corrected_min;
+    }
+    subproblem_count++;
+    return *this;
 }
 }  // namespace backend::tumexam

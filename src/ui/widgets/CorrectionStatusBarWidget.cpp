@@ -13,12 +13,7 @@ CorrectionStatusBarWidget::CorrectionStatusBarWidget() {
     set_content_height(20);
 }
 
-void CorrectionStatusBarWidget::prep_widget() {
-    // Don't catch input. The widget has to be realized for this:
-    /*signal_realize().connect([&] {
-        get_window()->set_pass_through(true);
-    });*/
-}
+void CorrectionStatusBarWidget::prep_widget() {}
 
 void CorrectionStatusBarWidget::set_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus) {
     this->correctionStatus = std::move(correctionStatus);
@@ -29,8 +24,9 @@ void CorrectionStatusBarWidget::set_correction_status(std::shared_ptr<backend::t
 void CorrectionStatusBarWidget::update_tooltip() {
     std::string tooltip;
     if (correctionStatus->pass1) {
-        int percent = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass1->corrected) / correctionStatus->pass1->total) * 100));
-        tooltip += "<span font_weight='bold' foreground='#a51d2d'>Pass 1:</span> " + std::to_string(correctionStatus->pass1->corrected) + " out of " + std::to_string(correctionStatus->pass1->total) + " - " + std::to_string(percent) + "%";
+        int percentTotal = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass1->corrected_min) / correctionStatus->pass1->total) * 100));
+        int percentAvg = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass1->corrected) / correctionStatus->pass1->total) * 100));
+        tooltip += "<span font_weight='bold' foreground='#a51d2d'>Pass 1:</span> " + std::to_string(correctionStatus->pass1->corrected_min) + " out of " + std::to_string(correctionStatus->pass1->total) + " - " + std::to_string(percentTotal) + "% (" + std::to_string(percentAvg) + "%)";
     }
 
     if (correctionStatus->pass2) {
@@ -38,8 +34,9 @@ void CorrectionStatusBarWidget::update_tooltip() {
             tooltip += '\n';
         }
 
-        int percent = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass2->corrected) / correctionStatus->pass2->total) * 100));
-        tooltip += "<span font_weight='bold' foreground='#24634c'>Pass 2:</span> " + std::to_string(correctionStatus->pass2->corrected) + " out of " + std::to_string(correctionStatus->pass2->total) + " - " + std::to_string(percent) + '%';
+        int percent = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass2->corrected_min) / correctionStatus->pass2->total) * 100));
+        int percentAvg = static_cast<int>(std::round((static_cast<double>(correctionStatus->pass2->corrected) / correctionStatus->pass2->total) * 100));
+        tooltip += "<span font_weight='bold' foreground='#24634c'>Pass 2:</span> " + std::to_string(correctionStatus->pass2->corrected_min) + " out of " + std::to_string(correctionStatus->pass2->total) + " - " + std::to_string(percent) + "% (" + std::to_string(percentAvg) + "%)";
     }
     set_tooltip_markup(tooltip);
 }
@@ -63,7 +60,7 @@ void CorrectionStatusBarWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Conte
     ctx->rectangle(0, 0, drawWidth, height);
     ctx->set_source_rgba(FOREGROUND_PASS_1_COLOR.get_red(), FOREGROUND_PASS_1_COLOR.get_green(), FOREGROUND_PASS_1_COLOR.get_blue(), FOREGROUND_PASS_1_COLOR.get_alpha());
     ctx->fill();
-    text += std::to_string(correctionStatus->pass1->corrected) + "/";
+    text += std::to_string(correctionStatus->pass1->corrected_min) + "/";
 
     // Pass 2:
     if (correctionStatus->pass2) {
@@ -72,7 +69,7 @@ void CorrectionStatusBarWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Conte
         ctx->rectangle(0, 0, drawWidth, height);
         ctx->set_source_rgba(FOREGROUND_PASS_2_COLOR.get_red(), FOREGROUND_PASS_2_COLOR.get_green(), FOREGROUND_PASS_2_COLOR.get_blue(), FOREGROUND_PASS_2_COLOR.get_alpha());
         ctx->fill();
-        text += std::to_string(correctionStatus->pass2->corrected) + "/" + std::to_string(correctionStatus->pass1->total);
+        text += std::to_string(correctionStatus->pass2->corrected_min) + "/" + std::to_string(correctionStatus->pass1->total);
     } else {
         text += std::to_string(correctionStatus->pass1->total);
     }

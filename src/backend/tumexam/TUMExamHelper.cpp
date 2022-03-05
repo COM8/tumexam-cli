@@ -30,7 +30,7 @@ std::optional<Submissions> get_submission_status(const Credentials& credentials)
 }
 
 std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Credentials& credentials, bool subproblems) {
-    cpr::Url url = credentials.base_url + "/api/exam/" + credentials.exam + "/correction/status" + (subproblems ? "?per_subproblem=true" : "");
+    cpr::Url url = credentials.base_url + "/api/exam/" + credentials.exam + "/correction/status?per_subproblem=true";
     cpr::Response r = cpr::Get(url, cpr::Cookies{{"session", credentials.session}, {"token", credentials.token}});
     if (r.status_code == 200) {
         try {
@@ -44,7 +44,7 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
                 // Check if the problem/subproblem is already known:
                 std::shared_ptr<CorrectionStatus> status{nullptr};
                 for (std::shared_ptr<CorrectionStatus>& s : correctionStatus) {
-                    if (*s == newStatus) {
+                    if ((subproblems && *s == newStatus) || (!subproblems && s->problem == newStatus.problem)) {
                         status = s;
                         break;
                     }
@@ -58,11 +58,41 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
 
                 // Update correction pass:
                 if (pass.pass == 1) {
-                    status->pass1 = pass;
+                    if (subproblems) {
+                        status->pass1 = pass;
+                    } else {
+                        if (status->pass1) {
+                            *(status->pass1) += pass;
+                        } else {
+                            status->pass1 = pass;
+                        }
+                    }
                 } else if (pass.pass == 2) {
-                    status->pass2 = pass;
+                    if (subproblems) {
+                        status->pass2 = pass;
+                    } else {
+                        if (status->pass2) {
+                            *(status->pass2) += pass;
+                        } else {
+                            status->pass2 = pass;
+                        }
+                    }
                 } else {
                     SPDLOG_ERROR("Unknown correction pass '{}' found.", pass.pass);
+                }
+            }
+
+            if (!subproblems) {
+                for (std::shared_ptr<CorrectionStatus>& s : correctionStatus) {
+                    s->subproblem = std::nullopt;
+                    if (s->pass1) {
+                        s->pass1->corrected /= s->pass1->subproblem_count;
+                    }
+
+                    if (s->pass2) {
+                        s->pass2->corrected /= s->pass2->subproblem_count;
+                        s->subproblem = std::nullopt;
+                    }
                 }
             }
             return correctionStatus;

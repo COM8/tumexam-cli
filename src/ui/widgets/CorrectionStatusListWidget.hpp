@@ -64,7 +64,7 @@ class CorrectionStatusListWidget : public Gtk::Box {
     void update_correction_status();
     void update_correction_status_ui();
     void update_is_updating_ui();
-    void update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus);
+    bool update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus);
 
     //-----------------------------Events:-----------------------------
     void on_notification_from_update_thread();

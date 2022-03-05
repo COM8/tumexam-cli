@@ -19,7 +19,7 @@ class CorrectionStatusBarWidget : public Gtk::DrawingArea {
     void set_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus);
 
  private:
-    void prep_widget();
+    static void prep_widget();
     void update_tooltip();
 
     void draw_text(const std::string& text, const Cairo::RefPtr<Cairo::Context>& ctx, double width, double height);
