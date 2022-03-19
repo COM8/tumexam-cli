@@ -38,7 +38,7 @@ message(STATUS "TUMexam client options")
 message(STATUS "=======================================================")
 tumexam_cli_option(TUMEXAM_CLI_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, TUMEXAM_CLI_ENABLE_LINTING has to be disabled." OFF)
 tumexam_cli_option(TUMEXAM_CLI_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, TUMEXAM_CLI_STATIC_ANALYZE has to be disabled." OFF)
-tumexam_cli_log_level(TUMEXAM_CLI_LOG_LEVEL "Sets the log level. 'Default' will set the log level to 'Debug' for debug builds and 'Info' for release builds.", "Off")
+tumexam_cli_log_level(TUMEXAM_CLI_LOG_LEVEL "Sets the log level. 'Default' will set the log level to 'Debug' for debug builds and 'Info' for release builds." "Off")
 message(STATUS "=======================================================")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
