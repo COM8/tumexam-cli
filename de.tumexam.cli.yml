@@ -47,7 +47,6 @@ modules:
             commit: 4f8fba14066156b73f1189a2b8bd568bde5284c5
       - name: spdlog 
         buildsystem: cmake-ninja
-        builddir: yes
         config-opts:
           - -DCMAKE_BUILD_TYPE=Release
           - -DSPDLOG_BUILD_EXAMPLE=OFF
