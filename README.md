@@ -50,6 +50,8 @@ sudo dnf install flatpak
 
 ### Building
 ```
+git clone https://github.com/COM8/tumexam-cli.git
+cd tumexam-cli
 flatpak-builder --force-clean flatpak_build_dir de.tumexam.cli.yml
 ```
 
