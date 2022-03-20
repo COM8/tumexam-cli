@@ -67,7 +67,7 @@ flatpak-builder --user --install --force-clean flatpak_build_dir de.tumexam.cli.
 flatpak uninstall de.tumexam.cli
 ```
 
-## Executing
+### Executing
 ```
-tumexam-cli
+flatpak run de.tumexam.cli
 ```
