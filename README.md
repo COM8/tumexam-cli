@@ -46,7 +46,7 @@ flatpak install flathub org.gnome.Sdk//41 org.gnome.Platform//41
 
 #### Debian/Ubuntu
 ```
-sudo dnf install flatpak
+sudo apt install flatpak
 flatpak install flathub org.gnome.Sdk//41 org.gnome.Platform//41
 ```
 
