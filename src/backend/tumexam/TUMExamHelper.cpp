@@ -19,7 +19,6 @@ std::optional<Submissions> get_submission_status(const Credentials& credentials)
         try {
             const nlohmann::json j = nlohmann::json::parse(r.text);
             return std::make_optional<Submissions>(Submissions::from_json(j));
-
         } catch (const std::exception& e) {
             SPDLOG_ERROR("Failed to parse submission status with: {}", e.what());
         }
@@ -104,5 +103,21 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
         SPDLOG_ERROR("Failed to request submission status with: {} {}", r.status_code, r.error.message);
     }
     return std::vector<std::shared_ptr<CorrectionStatus>>{};
+}
+
+std::optional<Feedbacks> get_feedbacks(const Credentials& credentials) {
+    cpr::Url url = credentials.base_url + "/api/exam/" + credentials.exam + "/review/get_erid";
+    cpr::Response r = cpr::Get(url, cpr::Cookies{{"session", credentials.session}, {"token", credentials.token}});
+    if (r.status_code == 200) {
+        try {
+            const nlohmann::json j = nlohmann::json::parse(r.text);
+            return std::make_optional<Feedbacks>(Feedbacks::from_json(j));
+        } catch (const std::exception& e) {
+            SPDLOG_ERROR("Failed to parse feedback with: {}", e.what());
+        }
+    } else {
+        SPDLOG_ERROR("Failed to request feedback with: {} {}", r.status_code, r.error.message);
+    }
+    return std::nullopt;
 }
 }  // namespace backend::tumexam

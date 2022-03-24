@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 #include "backend/tumexam/Credentials.hpp"
+#include "ui/widgets/FeedbacksWidget.hpp"
 #include <memory>
 #include <optional>
 #include <gdk/gdkkeysyms.h>
@@ -9,7 +10,7 @@
 #include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/label.h>
 namespace ui::windows {
-MainWindow::MainWindow() : submissions(this) {
+MainWindow::MainWindow() : submissions(this), feedbacks(this) {
     prep_window();
 }
 
@@ -27,6 +28,7 @@ void MainWindow::prep_window() {
     prep_connect(stack);
     prep_submission(stack);
     prep_correction(stack);
+    prep_feedback(stack);
     set_child(*stack);
 
     // Header bar:
@@ -101,6 +103,8 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
 void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "Submission"); }
 
 void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatus, "correction", "Correction"); }
+
+void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedback", "Feedback"); }
 
 //-----------------------------Events:-----------------------------
 void MainWindow::on_inspector_clicked() {

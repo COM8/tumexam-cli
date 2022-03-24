@@ -11,7 +11,11 @@ add_library(ui_widgets STATIC SubmissionsWidget.cpp
                               CorrectionStatusBarWidget.cpp
                               CorrectionStatusBarWidget.hpp
                               CorrectionStatusWidget.cpp
-                              CorrectionStatusWidget.hpp)
+                              CorrectionStatusWidget.hpp
+                              FeedbacksWidget.cpp
+                              FeedbacksWidget.hpp
+                              FeedbackWidget.cpp
+                              FeedbackWidget.hpp)
 
 target_link_libraries(ui_widgets PUBLIC PkgConfig::GTKMM backend_tumexam
                                  PRIVATE logger ui_dialogs utils)

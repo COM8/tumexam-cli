@@ -44,7 +44,7 @@ Submissions Submissions::from_json(const nlohmann::json& j) {
     j.at("students").get_to(students_array);
     std::vector<std::shared_ptr<SubmissionStudent>> students;
     for (const nlohmann::json& jStudent : students_array) {
-        students.emplace_back(std::make_unique<SubmissionStudent>(SubmissionStudent::from_json(jStudent)));
+        students.emplace_back(std::make_shared<SubmissionStudent>(SubmissionStudent::from_json(jStudent)));
     }
 
     return Submissions{
