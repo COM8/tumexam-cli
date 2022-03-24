@@ -1,4 +1,5 @@
 #include "FeedbackWidget.hpp"
+#include "ui/dialogs/FeedbackStudentDialog.hpp"
 #include "ui/dialogs/SubmissionStudentDialog.hpp"
 #include <cassert>
 #include <memory>
@@ -48,9 +49,9 @@ void FeedbackWidget::on_clicked() {
 
     assert(feedback);
 
-    /*infoDialog = std::make_unique<dialogs::SubmissionStudentDialog>(feedback);
-    infoDialog->set_transient_for(*window);
-    infoDialog->show();
-    infoDialog->present();*/
+    feedbackDialog = std::make_unique<dialogs::FeedbackStudentDialog>(feedback);
+    feedbackDialog->set_transient_for(*window);
+    feedbackDialog->show();
+    feedbackDialog->present();
 }
 }  // namespace ui::widgets

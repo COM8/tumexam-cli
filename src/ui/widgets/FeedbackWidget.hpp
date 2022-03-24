@@ -2,6 +2,7 @@
 
 #include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/FeedbackStudent.hpp"
+#include "ui/dialogs/FeedbackStudentDialog.hpp"
 #include <memory>
 #include <gtkmm.h>
 #include <gtkmm/button.h>
@@ -11,7 +12,7 @@ namespace ui::widgets {
 class FeedbackWidget : public Gtk::Button {
  private:
     std::shared_ptr<backend::tumexam::FeedbackStudent> feedback{nullptr};
-    // std::unique_ptr<dialogs::SubmissionStudentDialog> infoDialog{nullptr};
+    std::unique_ptr<dialogs::FeedbackStudentDialog> feedbackDialog{nullptr};
     Gtk::Window* window;
 
  public:
