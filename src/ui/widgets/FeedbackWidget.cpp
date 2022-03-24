@@ -4,6 +4,7 @@
 #include <cassert>
 #include <memory>
 #include <optional>
+#include <string>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
 #include <gtkmm/cssprovider.h>
@@ -16,20 +17,19 @@ FeedbackWidget::FeedbackWidget(std::shared_ptr<backend::tumexam::FeedbackStudent
     set_feedback(std::move(feedback));
 }
 
-void FeedbackWidget::prep_widget() {
-    // Style:
-    Glib::RefPtr<Gtk::CssProvider> cssProvider = Gtk::CssProvider::create();
-    cssProvider->load_from_file(Gio::File::create_for_uri("resource:///ui/theme.css"));
-    get_style_context()->add_provider(cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-}
+void FeedbackWidget::prep_widget() {}
 
 void FeedbackWidget::set_feedback(std::shared_ptr<backend::tumexam::FeedbackStudent> feedback) {
     this->feedback = std::move(feedback);
+    std::string labelStr;
     if (this->feedback->has_individual_feedback_end) {
-        set_label("🕗 " + this->feedback->matrikel);
-    } else {
-        set_label(this->feedback->matrikel);
+        labelStr = "🕗 ";
     }
+    labelStr += this->feedback->matrikel;
+    if (!this->feedback->feedbacks.empty()) {
+        labelStr += " - " + std::to_string(this->feedback->feedbacks.size());
+    }
+    set_label(labelStr);
     if (!this->feedback->color.empty()) {
         Glib::RefPtr<Gtk::CssProvider> provider = Gtk::CssProvider::create();
         provider->load_from_data("@define-color feedbackColor alpha(" + this->feedback->color + ", 0.7);"

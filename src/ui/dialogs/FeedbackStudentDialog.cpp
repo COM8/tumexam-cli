@@ -13,11 +13,15 @@ FeedbackStudentDialog::FeedbackStudentDialog(std::shared_ptr<backend::tumexam::F
 void FeedbackStudentDialog::prep_dialog() {
     assert(feedback);
 
+    std::string titleStr;
     if (feedback->has_individual_feedback_end) {
-        set_title("🕗 " + feedback->matrikel);
-    } else {
-        set_title(feedback->matrikel);
+        titleStr = "🕗 ";
     }
+    titleStr += this->feedback->matrikel;
+    if (!feedback->feedbacks.empty()) {
+        titleStr += " - " + std::to_string(feedback->feedbacks.size());
+    }
+    set_title(titleStr);
     set_size_request(400, 450);
 
     set_child(mainBox);
