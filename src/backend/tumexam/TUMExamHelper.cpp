@@ -1,13 +1,22 @@
 #include "TUMExamHelper.hpp"
 #include "backend/tumexam/CorrectionPass.hpp"
 #include "backend/tumexam/CorrectionStatus.hpp"
+#include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/Submissions.hpp"
+#include "cpr/api.h"
+#include "cpr/cookies.h"
 #include "cpr/cprtypes.h"
+#include "cpr/payload.h"
+#include "cpr/session.h"
+#include "cpr/util.h"
 #include "spdlog/spdlog.h"
+#include <cstddef>
 #include <logger/Logger.hpp>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <regex>
+#include <utility>
 #include <vector>
 #include <cpr/cpr.h>
 
@@ -119,5 +128,146 @@ std::optional<Feedbacks> get_feedbacks(const Credentials& credentials) {
         SPDLOG_ERROR("Failed to request feedback with: {} {}", r.status_code, r.error.message);
     }
     return std::nullopt;
+}
+
+std::string extract_csrf_token(const std::string& data) {
+    static const std::regex csrf_token_regex(R"lit([\W|\w]*name="csrf_token"\s+value="(.*)"[\W|\w]*)lit");
+    std::smatch match;
+    if (!std::regex_match(data, match, csrf_token_regex)) {
+        return "";
+    }
+    if (match.size() != 2) {
+        return "";
+    }
+    std::ssub_match token_match = match[1];
+    return token_match.str();
+}
+
+std::string extract_relay_state(const std::string& data) {
+    static const std::regex relay_state_regex(R"lit([\W|\w]*name="RelayState"\s+value=\"(.+)"[\W|\w]*)lit");
+    std::smatch match;
+    if (!std::regex_match(data, match, relay_state_regex)) {
+        return "";
+    }
+    if (match.size() != 2) {
+        return "";
+    }
+    std::ssub_match relay_state_match = match[1];
+    std::string relay_state = relay_state_match.str();
+    const std::string old = "ss&#x3a;mem&#x3a;";
+    return "ss:mem:" + relay_state.substr(old.size());
+}
+
+std::string extract_saml_response(const std::string& data) {
+    static const std::regex saml_response_regex(R"lit([\W|\w]*name="SAMLResponse"\s+value=\"(.+)"[\W|\w]*)lit");
+    std::smatch match;
+    if (!std::regex_match(data, match, saml_response_regex)) {
+        return "";
+    }
+    if (match.size() != 2) {
+        return "";
+    }
+    std::ssub_match saml_response_match = match[1];
+    return saml_response_match.str();
+}
+
+
+std::shared_ptr<Credentials> login(const std::string& instance, const std::string& username, const std::string& password) {
+    const std::string base_url = "https://" + instance + ".hq.tumexam.de";
+    cpr::Response r = cpr::Get(cpr::Url{base_url});
+    if (r.status_code != 200) {
+        SPDLOG_ERROR("Requesting the login page for '{}' failed with: {} {}", instance, r.status_code, r.error.message);
+        return nullptr;
+    }
+    const std::string csrf_token = extract_csrf_token(r.text);
+    if (csrf_token.empty()) {
+        SPDLOG_ERROR("Login failed. No csrf token found in: {}", r.text);
+        return nullptr;
+    }
+
+    cpr::Payload payload{
+        {"csrf_token", csrf_token},
+        {"j_username", username},
+        {"j_password", password},
+        {"donotcache", "1"},
+        {"_eventId_proceed", ""},
+    };
+    cpr::Cookies cookies = r.cookies;
+    r = cpr::Post(cpr::Url{"https://login.tum.de/idp/profile/SAML2/Redirect/SSO?execution=e1s1"}, std::move(payload), std::move(cookies));
+
+    if (r.status_code != 200) {
+        SPDLOG_ERROR("Failed to obtain 'shib_idp_session' for '{}' with: {} {}", instance, r.status_code, r.error.message);
+        return nullptr;
+    }
+
+    const std::string shib_idp_session = r.cookies["shib_idp_session"];
+    if(shib_idp_session.empty()) {
+        SPDLOG_ERROR("Failed to obtain 'shib_idp_session' cookie for '{}' with: Cookie missing in response.", instance);
+        return nullptr;
+    }
+
+    const std::string relay_state = extract_relay_state(r.text);
+    if(relay_state.empty()) {
+        SPDLOG_ERROR("Failed to obtain 'RelayState' for '{}' with: Invalid response.", instance);
+        return nullptr;
+    }
+    const std::string saml_response = extract_saml_response(r.text);
+    if(saml_response.empty()) {
+        SPDLOG_ERROR("Failed to obtain 'SAMLResponse' for '{}' with: Invalid response.", instance);
+        return nullptr;
+    }
+
+    cpr::Session session;
+    session.SetUrl(cpr::Url("https://hq.tumexam.de/Shibboleth.sso/SAML2/POST"));
+    session.SetPayload(cpr::Payload{{"RelayState", relay_state},
+    {"SAMLResponse", saml_response}});
+    r = session.Post();
+    if (r.status_code != 302) {
+        SPDLOG_ERROR("Failed to obtain 'shibsession' cookie for '{}' with: {} {}", instance, r.status_code, r.error.message);
+        return nullptr;
+    }
+
+    std::string shibsession_cookie_name;
+    std::string shibsession_cookie_value;
+    for (const auto& cookie : r.cookies) {
+        // NOLINTNEXTLINE (abseil-string-find-str-contains)
+        if(cookie.first.find("_shibsession_") != std::string::npos) {
+            shibsession_cookie_name = cookie.first;
+            shibsession_cookie_value = cookie.second;
+            break;
+        }
+    }
+    if(shibsession_cookie_name.empty() || shibsession_cookie_value.empty()) {
+        SPDLOG_ERROR("Failed to obtain '_shibsession_' cookie for '{}' with: Cookie missing in response.", instance);
+        return nullptr;
+    }
+
+    session.SetUrl(cpr::Url("https://hq.tumexam.de/login/" + instance + "/"));
+    session.SetCookies(r.cookies);
+    r = session.Get();
+    if (r.status_code != 200) {
+        SPDLOG_ERROR("Failed to confirm login for '{}' with: {} {}", instance, r.status_code, r.error.message);
+        return nullptr;
+    }
+
+    const std::string token_cookie = r.cookies["token"];
+    if(token_cookie.empty()) {
+        SPDLOG_ERROR("Failed to obtain 'token' cookie for '{}' with: Cookie missing in response.", instance);
+        return nullptr;
+    }
+
+    const std::string session_cookie = r.cookies["session"];
+    if(session_cookie.empty()) {
+        SPDLOG_ERROR("Failed to obtain 'session' cookie for '{}' with: Cookie missing in response.", instance);
+        return nullptr;
+    }
+
+    SPDLOG_INFO("Login for {} was successful!");
+    SPDLOG_DEBUG("Session: {}, Token: {}", session_cookie, token_cookie);
+    return std::make_shared<backend::tumexam::Credentials>(
+        base_url,
+        "",
+        session_cookie,
+        token_cookie);
 }
 }  // namespace backend::tumexam
