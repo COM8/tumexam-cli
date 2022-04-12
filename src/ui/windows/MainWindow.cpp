@@ -34,15 +34,13 @@ void MainWindow::prep_window() {
     // Header bar:
     Gtk::HeaderBar* headerBar = Gtk::make_managed<Gtk::HeaderBar>();
     viewMoreBtn.set_icon_name("open-menu");
-    Gtk::PopoverMenu* viewMorePopover = Gtk::make_managed<Gtk::PopoverMenu>();
-    Gtk::Stack* viewMoreMenuStack = Gtk::make_managed<Gtk::Stack>();
+    Gtk::PopoverMenu* viewMoreMenuPopover = Gtk::make_managed<Gtk::PopoverMenu>();
     Gtk::Box* viewMoreMenuBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
+    viewMoreMenuPopover->set_child(*viewMoreMenuBox);
     Gtk::Button* inspectorBtn = Gtk::make_managed<Gtk::Button>("Inspector");
     inspectorBtn->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_inspector_clicked));
     viewMoreMenuBox->append(*inspectorBtn);
-    viewMoreMenuStack->add(*viewMoreMenuBox, "main");
-    viewMorePopover->set_child(*viewMoreMenuStack);
-    viewMoreBtn.set_popover(*viewMorePopover);
+    viewMoreBtn.set_popover(*viewMoreMenuPopover);
     headerBar->pack_end(viewMoreBtn);
 
     Gtk::StackSwitcher* stackSwitcher = Gtk::make_managed<Gtk::StackSwitcher>();
