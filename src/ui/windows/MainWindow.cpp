@@ -89,16 +89,16 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     box->append(*passwordLbl);
     box->append(passwordEntry);
 
-    Gtk::Box* applyBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
-    applyBox->set_margin_top(10);
-    box->append(*applyBox);
+    Gtk::Box* loginBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+    loginBox->set_margin_top(10);
+    box->append(*loginBox);
     loginBtn.add_css_class("suggested-action");
     loginBtn.set_halign(Gtk::Align::START);
-    loginBtn.set_label("Apply");
+    loginBtn.set_label("Login");
     loginBtn.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_login_clicked));
-    applyBox->append(loginBtn);
+    loginBox->append(loginBtn);
     loginSpinner.set_margin_start(10);
-    applyBox->append(loginSpinner);
+    loginBox->append(loginSpinner);
 }
 
 void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "Submission"); }
