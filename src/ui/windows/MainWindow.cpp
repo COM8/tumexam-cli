@@ -2,8 +2,10 @@
 #include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
 #include "ui/widgets/FeedbacksWidget.hpp"
+#include <cassert>
 #include <memory>
 #include <optional>
+#include <thread>
 #include <gdk/gdkkeysyms.h>
 #include <glibmm/refptr.h>
 #include <gtkmm/enums.h>
@@ -13,6 +15,7 @@
 namespace ui::windows {
 MainWindow::MainWindow() : submissions(this), feedbacks(this) {
     prep_window();
+    loginThreadDispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_login_done));
 }
 
 void MainWindow::prep_window() {
@@ -57,13 +60,13 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     box->set_margin_bottom(10);
     stack->add(*box, "connect", "Connect");
 
-    Gtk::Label* baseUrlLbl = Gtk::make_managed<Gtk::Label>("Base URL");
-    baseUrlLbl->set_halign(Gtk::Align::START);
-    baseUrlLbl->set_margin_top(10);
-    box->append(*baseUrlLbl);
-    baseUrlEntry.set_placeholder_text("2021ws-in-gbs");
-    baseUrlEntry.get_buffer()->set_text("2021ws-in-gbs");
-    box->append(baseUrlEntry);
+    Gtk::Label* instanceLbl = Gtk::make_managed<Gtk::Label>("Instance");
+    instanceLbl->set_halign(Gtk::Align::START);
+    instanceLbl->set_margin_top(10);
+    box->append(*instanceLbl);
+    instanceEntry.set_placeholder_text("2021ws-in-gbs");
+    instanceEntry.get_buffer()->set_text("2021ws-in-gbs");
+    box->append(instanceEntry);
 
     Gtk::Label* examLbl = Gtk::make_managed<Gtk::Label>("Exam");
     examLbl->set_halign(Gtk::Align::START);
@@ -113,15 +116,21 @@ void MainWindow::on_inspector_clicked() {
 void MainWindow::on_login_clicked() {
     loginSpinner.start();
     loginBtn.set_sensitive(false);
-    
 
-    *(backend::tumexam::get_credentials_instance()) = backend::tumexam::login(baseUrlEntry.get_text(), usernameEntry.get_text(), passwordEntry.get_text());
+    assert(!loginThread);
+    loginThread = std::make_unique<std::thread>([this] { login_thread_func(); });
+}
+
+void MainWindow::login_thread_func() {
     if((*backend::tumexam::get_credentials_instance())) {
-        (*backend::tumexam::get_credentials_instance())->exam = examEntry.get_text();
+        *(backend::tumexam::get_credentials_instance()) = nullptr;   
+    }
+    else {
+        *(backend::tumexam::get_credentials_instance()) = backend::tumexam::login(instanceEntry.get_text(), usernameEntry.get_text(), passwordEntry.get_text());
     }
 
-    loginSpinner.stop();
-    loginBtn.set_sensitive(true);
+    // Notify the UI:
+    loginThreadDispatcher.emit();
 }
 
 bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierType /*state*/) {
@@ -138,5 +147,23 @@ bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierTy
         return true;
     }
     return false;
+}
+
+void MainWindow::on_login_done() {
+    if((*backend::tumexam::get_credentials_instance())) {
+        loginBtn.set_label("Logout");
+        (*backend::tumexam::get_credentials_instance())->exam = examEntry.get_text();
+    }
+    else {
+        loginBtn.set_label("Login");
+    }
+    loginSpinner.stop();
+    loginBtn.set_sensitive(true);
+
+    if(loginThread->joinable()) {
+        loginThread->join();
+    }
+    loginThread = nullptr;
+
 }
 }  // namespace ui::windows

@@ -3,6 +3,9 @@
 #include "ui/widgets/CorrectionStatusListWidget.hpp"
 #include "ui/widgets/FeedbacksWidget.hpp"
 #include "ui/widgets/SubmissionsWidget.hpp"
+#include <memory>
+#include <thread>
+#include <glibmm/dispatcher.h>
 #include <gtkmm.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
@@ -13,7 +16,7 @@ namespace ui::windows {
 class MainWindow : public Gtk::Window {
  private:
     Gtk::MenuButton viewMoreBtn{};
-    Gtk::Entry baseUrlEntry;
+    Gtk::Entry instanceEntry;
     Gtk::Entry examEntry;
     Gtk::Entry usernameEntry;
     Gtk::PasswordEntry passwordEntry;
@@ -22,6 +25,9 @@ class MainWindow : public Gtk::Window {
     widgets::SubmissionsWidget submissions;
     widgets::CorrectionStatusListWidget correctionStatus;
     widgets::FeedbacksWidget feedbacks;
+
+    std::unique_ptr<std::thread> loginThread{nullptr};
+    Glib::Dispatcher loginThreadDispatcher;
 
  public:
     MainWindow();
@@ -32,10 +38,12 @@ class MainWindow : public Gtk::Window {
     void prep_submission(Gtk::Stack* stack);
     void prep_correction(Gtk::Stack* stack);
     void prep_feedback(Gtk::Stack* stack);
+    void login_thread_func();
 
     //-----------------------------Events:-----------------------------
     void on_inspector_clicked();
     void on_login_clicked();
     bool on_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state);
+    void on_login_done();
 };
 }  // namespace ui::windows
