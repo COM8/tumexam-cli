@@ -17,7 +17,9 @@ add_library(ui_widgets STATIC SubmissionsWidget.cpp
                               FeedbackWidget.cpp
                               FeedbackWidget.hpp
                               StudentFeedbackListWidget.cpp
-                              StudentFeedbackListWidget.hpp)
+                              StudentFeedbackListWidget.hpp
+                              StudentsWidget.cpp
+                              StudentsWidget.hpp)
 
 target_link_libraries(ui_widgets PUBLIC PkgConfig::GTKMM backend_tumexam
                                  PRIVATE logger ui_dialogs utils)

@@ -16,6 +16,7 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <regex>
+#include <string>
 #include <utility>
 #include <vector>
 #include <cpr/cpr.h>
@@ -269,5 +270,52 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
         "",
         session_cookie,
         token_cookie);
+}
+
+int parse_students_page(const nlohmann::json& j, std::vector<Student> result) {
+    if (!j.contains("max_page")) {
+        throw std::runtime_error("Failed to parse students. 'max_page' field missing.");
+    }
+    int pages = 0;
+    j.at("max_page").get_to(pages);
+
+    if (!j.contains("results")) {
+        throw std::runtime_error("Failed to parse students. 'results' field missing.");
+    }
+    nlohmann::json::array_t students_array;
+    j.at("results").get_to(students_array);
+    std::vector<std::shared_ptr<SubmissionStudent>> students;
+    for (const nlohmann::json& jStudent : students_array) {
+        result.emplace_back(Student::from_json(jStudent));
+    }
+    return pages;
+}
+
+std::vector<Student> get_students(const Credentials& credentials) {
+    std::vector<Student> result;
+
+    cpr::Session session;
+    session.SetCookies(cpr::Cookies{{"session", credentials.session}, {"token", credentials.token}});
+    int pages = 2;
+    for (int page = 1; page <= pages; page++)
+    {
+        session.SetUrl(cpr::Url{credentials.base_url + "/api/exam/" + credentials.exam + "/grade?page=" + std::to_string(page)});
+        cpr::Response r = session.Get();
+        if (r.status_code == 200) {
+        try {
+            const nlohmann::json j = nlohmann::json::parse(r.text);
+            pages = parse_students_page(j, result);
+            SPDLOG_DEBUG("Downloaded students page {} out of {}.", page, pages);
+            continue;
+        } catch (const std::exception& e) {
+            SPDLOG_ERROR("Failed to parse students on page {} with: {}", page, e.what());
+        }
+        } else {
+            SPDLOG_ERROR("Failed to request students page {} with: {} {}", page, r.status_code, r.error.message);
+        }
+        result.clear();
+        break;
+    }
+    return result;
 }
 }  // namespace backend::tumexam

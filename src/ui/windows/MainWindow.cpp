@@ -2,6 +2,7 @@
 #include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
 #include "ui/widgets/FeedbacksWidget.hpp"
+#include "ui/widgets/StudentsWidget.hpp"
 #include <cassert>
 #include <memory>
 #include <optional>
@@ -13,7 +14,7 @@
 #include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/label.h>
 namespace ui::windows {
-MainWindow::MainWindow() : submissions(this), feedbacks(this) {
+MainWindow::MainWindow() : submissions(this), feedbacks(this), students(this) {
     prep_window();
     loginThreadDispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_login_done));
 }
@@ -30,6 +31,7 @@ void MainWindow::prep_window() {
     // Content:
     Gtk::Stack* stack = Gtk::make_managed<Gtk::Stack>();
     prep_connect(stack);
+    prep_students(stack);
     prep_submission(stack);
     prep_correction(stack);
     prep_feedback(stack);
@@ -100,6 +102,8 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     loginSpinner.set_margin_start(10);
     loginBox->append(loginSpinner);
 }
+
+void MainWindow::prep_students(Gtk::Stack* stack) { stack->add(students, "students", "Students"); }
 
 void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "Submission"); }
 

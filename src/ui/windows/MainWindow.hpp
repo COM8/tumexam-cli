@@ -3,6 +3,7 @@
 #include "ui/widgets/CorrectionStatusListWidget.hpp"
 #include "ui/widgets/FeedbacksWidget.hpp"
 #include "ui/widgets/SubmissionsWidget.hpp"
+#include "ui/widgets/StudentsWidget.hpp"
 #include <memory>
 #include <thread>
 #include <glibmm/dispatcher.h>
@@ -25,6 +26,7 @@ class MainWindow : public Gtk::Window {
     widgets::SubmissionsWidget submissions;
     widgets::CorrectionStatusListWidget correctionStatus;
     widgets::FeedbacksWidget feedbacks;
+    widgets::StudentsWidget students;
 
     std::unique_ptr<std::thread> loginThread{nullptr};
     Glib::Dispatcher loginThreadDispatcher;
@@ -35,6 +37,7 @@ class MainWindow : public Gtk::Window {
  private:
     void prep_window();
     void prep_connect(Gtk::Stack* stack);
+    void prep_students(Gtk::Stack* stack);
     void prep_submission(Gtk::Stack* stack);
     void prep_correction(Gtk::Stack* stack);
     void prep_feedback(Gtk::Stack* stack);

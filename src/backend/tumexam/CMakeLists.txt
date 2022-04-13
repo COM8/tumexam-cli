@@ -25,7 +25,9 @@ add_library(backend_tumexam STATIC TUMExamHelper.cpp
                                    FeedbackStudent.cpp
                                    FeedbackStudent.hpp
                                    Feedback.cpp
-                                   Feedback.hpp)
+                                   Feedback.hpp
+                                   Student.cpp
+                                   Student.hpp)
 
 target_link_libraries(backend_tumexam PRIVATE logger cpr::cpr utils
                                       PUBLIC nlohmann_json::nlohmann_json)
