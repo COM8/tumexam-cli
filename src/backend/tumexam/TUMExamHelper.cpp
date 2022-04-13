@@ -262,7 +262,7 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
         return nullptr;
     }
 
-    SPDLOG_INFO("Login for {} was successful!");
+    SPDLOG_INFO("Login for {} was successful!", instance);
     SPDLOG_DEBUG("Session: {}, Token: {}", session_cookie, token_cookie);
     return std::make_shared<backend::tumexam::Credentials>(
         base_url,
