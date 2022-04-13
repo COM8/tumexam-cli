@@ -13,11 +13,16 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <gtkmm/adjustment.h>
 #include <gtkmm/box.h>
 #include <gtkmm/enums.h>
+#include <gtkmm/liststore.h>
 #include <gtkmm/orientable.h>
+#include <gtkmm/treemodel.h>
+#include <gtkmm/treemodelfilter.h>
+#include <gtkmm/treeviewcolumn.h>
 
 namespace ui::widgets {
 StudentsWidget::StudentsWidget(Gtk::Window* window) : Gtk::Box(Gtk::Orientation::VERTICAL), window(window) {
@@ -52,8 +57,28 @@ void StudentsWidget::prep_widget() {
     actionsBox->append(searchEntry);
 
     studentsScroll.set_margin_top(10);
-    studentsScroll.set_vexpand(true);
+    studentsScroll.set_expand(true);
+    studentsScroll.set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
     append(studentsScroll);
+
+    studentsScroll.set_child(studentsTreeView);
+    studentsListStore = Gtk::ListStore::create(studentColumns);
+    studentsFilterModel = Gtk::TreeModelFilter::create(studentsListStore);
+    studentsFilterModel->set_visible_func(sigc::mem_fun(*this, &StudentsWidget::row_visible_func));
+    studentsTreeView.set_model(studentsFilterModel);
+    studentsTreeView.append_column("SRID", studentColumns.srid);
+    studentsTreeView.append_column("ERID", studentColumns.erid);
+    studentsTreeView.append_column("Matrikel", studentColumns.matrikel);
+    studentsTreeView.append_column("First", studentColumns.firstname);
+    studentsTreeView.append_column("Last", studentColumns.lastname);
+    studentsTreeView.append_column("Flags", studentColumns.flags);
+    std::vector<Gtk::TreeViewColumn*> columns = studentsTreeView.get_columns();
+    for (size_t i = 0; i < columns.size(); i++)
+    {
+        columns[i]->set_sort_indicator(true);
+        columns[i]->set_resizable(true);
+        columns[i]->set_sort_column(static_cast<int>(i));
+    }
 }
 
 std::string StudentsWidget::get_cur_time() {
@@ -103,8 +128,9 @@ void StudentsWidget::update_students() {
     isUpdating = true;
     isUpdatingChangedDisp.emit();
     std::vector<backend::tumexam::Student> students = backend::tumexam::get_students(**(backend::tumexam::get_credentials_instance()));
+    SPDLOG_INFO("Found {} students.", students.size());
     studentsMutex.lock();
-    // Update students list:
+    this->students = std::move(students);
     studentsMutex.unlock();
     studentsChangedDisp.emit();
     isUpdating = false;
@@ -117,6 +143,17 @@ void StudentsWidget::update_students_ui() {
         updateLbl.set_text(get_cur_time() + " - Success");
     } else {
         updateLbl.set_text(get_cur_time() + " - No students found");
+    }
+
+    studentsListStore->clear();
+    for(const backend::tumexam::Student& student : students) {
+        Gtk::TreeRow& row = *(studentsListStore->append());
+        row[studentColumns.srid] = student.srid;
+        row[studentColumns.erid] = student.erid;
+        row[studentColumns.matrikel] = student.matrikel;
+        row[studentColumns.firstname] = student.firstname;
+        row[studentColumns.lastname] = student.lastname;
+        row[studentColumns.flags] = student.flags;
     }
     studentsMutex.unlock();
 }
@@ -144,6 +181,40 @@ void StudentsWidget::on_update_clicked() {
     update_is_updating_ui();
 }
 
+bool StudentsWidget::row_visible_func(const Gtk::TreeModel::const_iterator& iter) {
+    if(filterString.empty()) {
+        return true;
+    }
+
+    // SRID:
+    std::string data = utils::to_lower_clean(iter->get_value(studentColumns.srid).c_str());
+    if (!data.empty() && data.find(filterString) != std::string::npos) {
+        return true;
+    }
+
+    // ERID:
+    data = utils::to_lower_clean(iter->get_value(studentColumns.erid).c_str());
+    if (!data.empty() && data.find(filterString) != std::string::npos) {
+        return true;
+    }
+
+    // Matrikel:
+    data = utils::to_lower_clean(iter->get_value(studentColumns.matrikel).c_str());
+    if (!data.empty() && data.find(filterString) != std::string::npos) {
+        return true;
+    }
+
+    // Firstname:
+    data = utils::to_lower_clean(iter->get_value(studentColumns.firstname).c_str());
+    if (!data.empty() && (data.find(filterString) != std::string::npos || filterString.find(data) != std::string::npos)) {
+        return true;
+    }
+
+    // Lastname:
+    data = utils::to_lower_clean(iter->get_value(studentColumns.lastname).c_str());
+    return !data.empty() && (data.find(filterString) != std::string::npos || filterString.find(data) != std::string::npos);
+}
+
 //-----------------------------Events:-----------------------------
 void StudentsWidget::on_notification_from_update_thread() { update_students_ui(); }
 
@@ -151,7 +222,11 @@ void StudentsWidget::on_is_updating_changed_from_thread() { update_is_updating_u
 
 void StudentsWidget::on_search_changed() {
     studentsMutex.lock();
-    // Update filter
+    filterString =  utils::to_lower_clean(searchEntry.get_text());
+    std::string_view sv = filterString;
+    utils::trim(sv);
+    filterString = sv;
+    studentsFilterModel->refilter();
     studentsMutex.unlock();
 }
 }  // namespace ui::widgets

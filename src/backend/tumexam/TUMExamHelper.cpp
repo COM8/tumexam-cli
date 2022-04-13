@@ -272,7 +272,7 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
         token_cookie);
 }
 
-int parse_students_page(const nlohmann::json& j, std::vector<Student> result) {
+int parse_students_page(const nlohmann::json& j, std::vector<Student>& result) {
     if (!j.contains("max_page")) {
         throw std::runtime_error("Failed to parse students. 'max_page' field missing.");
     }
@@ -286,7 +286,7 @@ int parse_students_page(const nlohmann::json& j, std::vector<Student> result) {
     j.at("results").get_to(students_array);
     std::vector<std::shared_ptr<SubmissionStudent>> students;
     for (const nlohmann::json& jStudent : students_array) {
-        result.emplace_back(Student::from_json(jStudent));
+        result.push_back(Student::from_json(jStudent));
     }
     return pages;
 }
@@ -302,14 +302,14 @@ std::vector<Student> get_students(const Credentials& credentials) {
         session.SetUrl(cpr::Url{credentials.base_url + "/api/exam/" + credentials.exam + "/grade?page=" + std::to_string(page)});
         cpr::Response r = session.Get();
         if (r.status_code == 200) {
-        try {
-            const nlohmann::json j = nlohmann::json::parse(r.text);
-            pages = parse_students_page(j, result);
-            SPDLOG_DEBUG("Downloaded students page {} out of {}.", page, pages);
-            continue;
-        } catch (const std::exception& e) {
-            SPDLOG_ERROR("Failed to parse students on page {} with: {}", page, e.what());
-        }
+            try {
+                const nlohmann::json j = nlohmann::json::parse(r.text);
+                pages = parse_students_page(j, result);
+                SPDLOG_DEBUG("Downloaded students page {} out of {}.", page, pages);
+                continue;
+            } catch (const std::exception& e) {
+                SPDLOG_ERROR("Failed to parse students on page {} with: {}", page, e.what());
+            }
         } else {
             SPDLOG_ERROR("Failed to request students page {} with: {} {}", page, r.status_code, r.error.message);
         }

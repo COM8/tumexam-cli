@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <glibmm/ustring.h>
 #include <gtkmm.h>
 #include <gtkmm/box.h>
 #include <gtkmm/label.h>
@@ -15,6 +16,8 @@
 #include <gtkmm/spinner.h>
 #include <gtkmm/switch.h>
 #include <gtkmm/togglebutton.h>
+#include <gtkmm/treemodelcolumn.h>
+#include <gtkmm/treeview.h>
 
 namespace ui::widgets {
 class StudentsWidget : public Gtk::Box {
@@ -35,6 +38,30 @@ class StudentsWidget : public Gtk::Box {
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow studentsScroll;
 
+    class StudentColumns : public Gtk::TreeModel::ColumnRecord {
+      public:
+       Gtk::TreeModelColumn<Glib::ustring> srid;
+       Gtk::TreeModelColumn<Glib::ustring> erid;
+       Gtk::TreeModelColumn<Glib::ustring> matrikel;
+       Gtk::TreeModelColumn<Glib::ustring> firstname;
+       Gtk::TreeModelColumn<Glib::ustring> lastname;
+       Gtk::TreeModelColumn<Glib::ustring> flags;
+
+       StudentColumns() {
+          add(srid);
+          add(erid);
+          add(matrikel);
+          add(firstname);
+          add(lastname);
+          add(flags);
+       }
+    };
+    StudentColumns studentColumns;
+    Gtk::TreeView studentsTreeView;
+    Glib::RefPtr<Gtk::ListStore> studentsListStore;
+    Glib::RefPtr<Gtk::TreeModelFilter> studentsFilterModel;
+    std::string filterString;
+
     std::vector<backend::tumexam::Student> students;
 
     Gtk::Window* window;
@@ -54,6 +81,8 @@ class StudentsWidget : public Gtk::Box {
     void update_students();
     void update_students_ui();
     void update_is_updating_ui();
+
+    bool row_visible_func(const Gtk::TreeModel::const_iterator& iter);
 
     //-----------------------------Events:-----------------------------
     void on_notification_from_update_thread();
