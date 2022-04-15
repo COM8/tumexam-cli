@@ -43,15 +43,10 @@ void MainWindow::prep_window() {
 
     // Header bar:
     Gtk::HeaderBar* headerBar = Gtk::make_managed<Gtk::HeaderBar>();
-    viewMoreBtn.set_icon_name("open-menu");
-    Gtk::PopoverMenu* viewMoreMenuPopover = Gtk::make_managed<Gtk::PopoverMenu>();
-    Gtk::Box* viewMoreMenuBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
-    viewMoreMenuPopover->set_child(*viewMoreMenuBox);
-    Gtk::Button* inspectorBtn = Gtk::make_managed<Gtk::Button>("Inspector");
-    inspectorBtn->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_inspector_clicked));
-    viewMoreMenuBox->append(*inspectorBtn);
-    viewMoreBtn.set_popover(*viewMoreMenuPopover);
-    headerBar->pack_end(viewMoreBtn);
+    inspectorBtn.set_label("🐞");
+    inspectorBtn.set_tooltip_text("Inspector");
+    inspectorBtn.signal_clicked().connect(&MainWindow::on_inspector_btn_clicked);
+    headerBar->pack_end(inspectorBtn);
 
     Gtk::StackSwitcher* stackSwitcher = Gtk::make_managed<Gtk::StackSwitcher>();
     stackSwitcher->set_stack(*stack);
@@ -119,8 +114,7 @@ void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatu
 void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedback", "Feedback"); }
 
 //-----------------------------Events:-----------------------------
-void MainWindow::on_inspector_clicked() {
-    viewMoreBtn.popdown();
+void MainWindow::on_inspector_btn_clicked() {
     gtk_window_set_interactive_debugging(true);
 }
 

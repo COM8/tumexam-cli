@@ -16,7 +16,7 @@
 namespace ui::windows {
 class MainWindow : public Gtk::Window {
  private:
-    Gtk::MenuButton viewMoreBtn{};
+    Gtk::Button inspectorBtn;
     Gtk::Entry instanceEntry;
     Gtk::Entry examEntry;
     Gtk::Entry usernameEntry;
@@ -44,7 +44,7 @@ class MainWindow : public Gtk::Window {
     void login_thread_func();
 
     //-----------------------------Events:-----------------------------
-    void on_inspector_clicked();
+    static void on_inspector_btn_clicked();
     void on_login_clicked();
     bool on_key_pressed(guint keyVal, guint keyCode, Gdk::ModifierType modifier);
     void on_login_done();
