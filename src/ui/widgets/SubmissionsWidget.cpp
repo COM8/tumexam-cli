@@ -78,6 +78,13 @@ void SubmissionsWidget::prep_widget() {
     countUploadedAnnouncedLbl.add_css_class("submission-uploaded-announced-simple");
     statusBox.append(countUploadedAnnouncedLbl);
 
+    append(submissionStatsExpander);
+    submissionStatsExpander.hide();
+    submissionStatsExpander.set_label("Statistics");
+    submissionStatsExpander.set_child(submissionStatsBarWidget);
+    submissionStatsBarWidget.set_margin(10);
+    submissionStatsExpander.set_hexpand();
+
     submissionsFlowBox.set_selection_mode(Gtk::SelectionMode::NONE);
     submissionsScroll.set_child(submissionsFlowBox);
     submissionsScroll.set_margin_top(10);
@@ -220,16 +227,19 @@ void SubmissionsWidget::update_submissions_ui() {
     clear_submissions();
     submissionFlowBoxWidgets.clear();
     submissionWidgets.clear();
+    submissionStatsBarWidget.set_submissions(submissions);
     if (submissions) {
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
             add_submission_button(submission);
         }
         filter_submissions();
         statusBox.show();
+        submissionStatsExpander.show();
         updateLbl.set_text(get_cur_time() + " - Success");
     } else {
         updateLbl.set_text(get_cur_time() + " - No submissions found");
         statusBox.hide();
+        submissionStatsExpander.hide();
     }
     submissionsMutex.unlock();
 }

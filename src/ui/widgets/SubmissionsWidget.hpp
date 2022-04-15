@@ -2,6 +2,7 @@
 
 #include "backend/tumexam/Credentials.hpp"
 #include "backend/tumexam/Submissions.hpp"
+#include "ui/widgets/SubmissionStatsBarWidget.hpp"
 #include "ui/widgets/SubmissionWidget.hpp"
 #include <memory>
 #include <mutex>
@@ -9,6 +10,7 @@
 #include <vector>
 #include <gtkmm.h>
 #include <gtkmm/box.h>
+#include <gtkmm/expander.h>
 #include <gtkmm/label.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
@@ -41,6 +43,8 @@ class SubmissionsWidget : public Gtk::Box {
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow submissionsScroll;
     Gtk::FlowBox submissionsFlowBox;
+    Gtk::Expander submissionStatsExpander;
+    SubmissionStatsBarWidget submissionStatsBarWidget;
 
     Gtk::Box statusBox;
     Gtk::Label countNoneLbl;
