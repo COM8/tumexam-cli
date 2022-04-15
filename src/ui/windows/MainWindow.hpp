@@ -2,8 +2,8 @@
 
 #include "ui/widgets/CorrectionStatusListWidget.hpp"
 #include "ui/widgets/FeedbacksWidget.hpp"
-#include "ui/widgets/SubmissionsWidget.hpp"
 #include "ui/widgets/StudentsWidget.hpp"
+#include "ui/widgets/SubmissionsWidget.hpp"
 #include <memory>
 #include <thread>
 #include <glibmm/dispatcher.h>
@@ -46,7 +46,8 @@ class MainWindow : public Gtk::Window {
     //-----------------------------Events:-----------------------------
     void on_inspector_clicked();
     void on_login_clicked();
-    bool on_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state);
+    bool on_key_pressed(guint keyVal, guint keyCode, Gdk::ModifierType modifier);
     void on_login_done();
+    void on_password_entry_key_pressed(guint keyVal, guint keyCode, Gdk::ModifierType modifier);
 };
 }  // namespace ui::windows

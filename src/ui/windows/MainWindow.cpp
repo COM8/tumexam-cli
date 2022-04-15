@@ -13,6 +13,10 @@
 #include <gtkmm/eventcontroller.h>
 #include <gtkmm/eventcontrollerkey.h>
 #include <gtkmm/label.h>
+#include <gtkmm/shortcut.h>
+#include <gtkmm/shortcutaction.h>
+#include <gtkmm/shortcutcontroller.h>
+#include <gtkmm/shortcuttrigger.h>
 namespace ui::windows {
 MainWindow::MainWindow() : submissions(this), feedbacks(this), students(this) {
     prep_window();
@@ -90,6 +94,9 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     passwordLbl->set_margin_top(10);
     box->append(*passwordLbl);
     box->append(passwordEntry);
+    Glib::RefPtr<Gtk::EventControllerKey> controller = Gtk::EventControllerKey::create();
+    controller->signal_key_released().connect(sigc::mem_fun(*this, &MainWindow::on_password_entry_key_pressed));
+    passwordEntry.add_controller(controller);
 
     Gtk::Box* loginBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
     loginBox->set_margin_top(10);
@@ -126,10 +133,9 @@ void MainWindow::on_login_clicked() {
 }
 
 void MainWindow::login_thread_func() {
-    if((*backend::tumexam::get_credentials_instance())) {
-        *(backend::tumexam::get_credentials_instance()) = nullptr;   
-    }
-    else {
+    if ((*backend::tumexam::get_credentials_instance())) {
+        *(backend::tumexam::get_credentials_instance()) = nullptr;
+    } else {
         *(backend::tumexam::get_credentials_instance()) = backend::tumexam::login(instanceEntry.get_text(), usernameEntry.get_text(), passwordEntry.get_text());
     }
 
@@ -137,8 +143,8 @@ void MainWindow::login_thread_func() {
     loginThreadDispatcher.emit();
 }
 
-bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierType /*state*/) {
-    if (keyval == GDK_KEY_F11) {
+bool MainWindow::on_key_pressed(guint keyVal, guint /*keyCode*/, Gdk::ModifierType /*modifier*/) {
+    if (keyVal == GDK_KEY_F11) {
         if (is_fullscreen()) {
             unfullscreen();
         } else {
@@ -146,7 +152,7 @@ bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierTy
         }
         return true;
     }
-    if (keyval == GDK_KEY_Escape && is_fullscreen()) {
+    if (keyVal == GDK_KEY_Escape && is_fullscreen()) {
         unfullscreen();
         return true;
     }
@@ -154,20 +160,25 @@ bool MainWindow::on_key_pressed(guint keyval, guint /*keycode*/, Gdk::ModifierTy
 }
 
 void MainWindow::on_login_done() {
-    if((*backend::tumexam::get_credentials_instance())) {
+    if ((*backend::tumexam::get_credentials_instance())) {
         loginBtn.set_label("Logout");
         (*backend::tumexam::get_credentials_instance())->exam = examEntry.get_text();
-    }
-    else {
+    } else {
         loginBtn.set_label("Login");
     }
     loginSpinner.stop();
     loginBtn.set_sensitive(true);
 
-    if(loginThread->joinable()) {
+    if (loginThread->joinable()) {
         loginThread->join();
     }
     loginThread = nullptr;
+}
 
+void MainWindow::on_password_entry_key_pressed(guint keyVal, guint /*keyCode*/, Gdk::ModifierType /*modifier*/) {
+    if (keyVal == GDK_KEY_Return) {
+        loginBtn.grab_focus();
+        on_login_clicked();
+    }
 }
 }  // namespace ui::windows

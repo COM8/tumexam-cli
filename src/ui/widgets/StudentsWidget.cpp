@@ -55,7 +55,7 @@ void StudentsWidget::prep_widget() {
     actionsBox->append(updateLbl);
     searchEntry.set_margin_start(10);
     searchEntry.signal_changed().connect(sigc::mem_fun(*this, &StudentsWidget::on_search_changed));
-    searchEntry.set_placeholder_text("ERID/SRID/Matr./Name");
+    // searchEntry.set_placeholder_text("ERID/SRID/Matr./Name"); // Not supported by a SearchEntry
     actionsBox->append(searchEntry);
 
     studentsScroll.set_margin_top(10);
