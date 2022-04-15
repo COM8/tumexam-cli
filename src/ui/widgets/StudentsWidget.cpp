@@ -80,6 +80,7 @@ void StudentsWidget::prep_widget() {
         columns[i]->set_sort_indicator(true);
         columns[i]->set_resizable(true);
         columns[i]->set_sort_column(static_cast<int>(i));
+        columns[i]->set_min_width(50);
     }
 }
 
