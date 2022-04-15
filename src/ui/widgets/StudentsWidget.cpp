@@ -1,7 +1,7 @@
 #include "StudentsWidget.hpp"
 #include "backend/tumexam/Credentials.hpp"
-#include "backend/tumexam/TUMExamHelper.hpp"
 #include "backend/tumexam/Student.hpp"
+#include "backend/tumexam/TUMExamHelper.hpp"
 #include "logger/Logger.hpp"
 #include "spdlog/spdlog.h"
 #include "utils/Date.hpp"
@@ -22,6 +22,7 @@
 #include <gtkmm/orientable.h>
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treemodelfilter.h>
+#include <gtkmm/treemodelsort.h>
 #include <gtkmm/treeviewcolumn.h>
 
 namespace ui::widgets {
@@ -54,6 +55,7 @@ void StudentsWidget::prep_widget() {
     actionsBox->append(updateLbl);
     searchEntry.set_margin_start(10);
     searchEntry.signal_changed().connect(sigc::mem_fun(*this, &StudentsWidget::on_search_changed));
+    searchEntry.set_placeholder_text("ERID/SRID/Matr./Name");
     actionsBox->append(searchEntry);
 
     studentsScroll.set_margin_top(10);
@@ -65,7 +67,8 @@ void StudentsWidget::prep_widget() {
     studentsListStore = Gtk::ListStore::create(studentColumns);
     studentsFilterModel = Gtk::TreeModelFilter::create(studentsListStore);
     studentsFilterModel->set_visible_func(sigc::mem_fun(*this, &StudentsWidget::row_visible_func));
-    studentsTreeView.set_model(studentsFilterModel);
+    studentsSortModel = Gtk::TreeModelSort::create(studentsFilterModel);
+    studentsTreeView.set_model(studentsSortModel);
     studentsTreeView.append_column("SRID", studentColumns.srid);
     studentsTreeView.append_column("ERID", studentColumns.erid);
     studentsTreeView.append_column("Matrikel", studentColumns.matrikel);
@@ -73,8 +76,7 @@ void StudentsWidget::prep_widget() {
     studentsTreeView.append_column("Last", studentColumns.lastname);
     studentsTreeView.append_column("Flags", studentColumns.flags);
     std::vector<Gtk::TreeViewColumn*> columns = studentsTreeView.get_columns();
-    for (size_t i = 0; i < columns.size(); i++)
-    {
+    for (size_t i = 0; i < columns.size(); i++) {
         columns[i]->set_sort_indicator(true);
         columns[i]->set_resizable(true);
         columns[i]->set_sort_column(static_cast<int>(i));
@@ -146,7 +148,7 @@ void StudentsWidget::update_students_ui() {
     }
 
     studentsListStore->clear();
-    for(const backend::tumexam::Student& student : students) {
+    for (const backend::tumexam::Student& student : students) {
         Gtk::TreeRow& row = *(studentsListStore->append());
         row[studentColumns.srid] = student.srid;
         row[studentColumns.erid] = student.erid;
@@ -182,7 +184,7 @@ void StudentsWidget::on_update_clicked() {
 }
 
 bool StudentsWidget::row_visible_func(const Gtk::TreeModel::const_iterator& iter) {
-    if(filterString.empty()) {
+    if (filterString.empty()) {
         return true;
     }
 
@@ -222,7 +224,7 @@ void StudentsWidget::on_is_updating_changed_from_thread() { update_is_updating_u
 
 void StudentsWidget::on_search_changed() {
     studentsMutex.lock();
-    filterString =  utils::to_lower_clean(searchEntry.get_text());
+    filterString = utils::to_lower_clean(searchEntry.get_text());
     std::string_view sv = filterString;
     utils::trim(sv);
     filterString = sv;

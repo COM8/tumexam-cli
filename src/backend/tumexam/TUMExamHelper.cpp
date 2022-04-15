@@ -172,7 +172,6 @@ std::string extract_saml_response(const std::string& data) {
     return saml_response_match.str();
 }
 
-
 std::shared_ptr<Credentials> login(const std::string& instance, const std::string& username, const std::string& password) {
     const std::string base_url = "https://" + instance + ".hq.tumexam.de";
     cpr::Response r = cpr::Get(cpr::Url{base_url});
@@ -202,18 +201,18 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
     }
 
     const std::string shib_idp_session = r.cookies["shib_idp_session"];
-    if(shib_idp_session.empty()) {
+    if (shib_idp_session.empty()) {
         SPDLOG_ERROR("Failed to obtain 'shib_idp_session' cookie for '{}' with: Cookie missing in response.", instance);
         return nullptr;
     }
 
     const std::string relay_state = extract_relay_state(r.text);
-    if(relay_state.empty()) {
+    if (relay_state.empty()) {
         SPDLOG_ERROR("Failed to obtain 'RelayState' for '{}' with: Invalid response.", instance);
         return nullptr;
     }
     const std::string saml_response = extract_saml_response(r.text);
-    if(saml_response.empty()) {
+    if (saml_response.empty()) {
         SPDLOG_ERROR("Failed to obtain 'SAMLResponse' for '{}' with: Invalid response.", instance);
         return nullptr;
     }
@@ -221,7 +220,7 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
     cpr::Session session;
     session.SetUrl(cpr::Url("https://hq.tumexam.de/Shibboleth.sso/SAML2/POST"));
     session.SetPayload(cpr::Payload{{"RelayState", relay_state},
-    {"SAMLResponse", saml_response}});
+                                    {"SAMLResponse", saml_response}});
     r = session.Post();
     if (r.status_code != 302) {
         SPDLOG_ERROR("Failed to obtain 'shibsession' cookie for '{}' with: {} {}", instance, r.status_code, r.error.message);
@@ -232,13 +231,13 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
     std::string shibsession_cookie_value;
     for (const auto& cookie : r.cookies) {
         // NOLINTNEXTLINE (abseil-string-find-str-contains)
-        if(cookie.first.find("_shibsession_") != std::string::npos) {
+        if (cookie.first.find("_shibsession_") != std::string::npos) {
             shibsession_cookie_name = cookie.first;
             shibsession_cookie_value = cookie.second;
             break;
         }
     }
-    if(shibsession_cookie_name.empty() || shibsession_cookie_value.empty()) {
+    if (shibsession_cookie_name.empty() || shibsession_cookie_value.empty()) {
         SPDLOG_ERROR("Failed to obtain '_shibsession_' cookie for '{}' with: Cookie missing in response.", instance);
         return nullptr;
     }
@@ -252,13 +251,13 @@ std::shared_ptr<Credentials> login(const std::string& instance, const std::strin
     }
 
     const std::string token_cookie = r.cookies["token"];
-    if(token_cookie.empty()) {
+    if (token_cookie.empty()) {
         SPDLOG_ERROR("Failed to obtain 'token' cookie for '{}' with: Cookie missing in response.", instance);
         return nullptr;
     }
 
     const std::string session_cookie = r.cookies["session"];
-    if(session_cookie.empty()) {
+    if (session_cookie.empty()) {
         SPDLOG_ERROR("Failed to obtain 'session' cookie for '{}' with: Cookie missing in response.", instance);
         return nullptr;
     }
@@ -297,8 +296,7 @@ std::vector<Student> get_students(const Credentials& credentials) {
     cpr::Session session;
     session.SetCookies(cpr::Cookies{{"session", credentials.session}, {"token", credentials.token}});
     int pages = 2;
-    for (int page = 1; page <= pages; page++)
-    {
+    for (int page = 1; page <= pages; page++) {
         session.SetUrl(cpr::Url{credentials.base_url + "/api/exam/" + credentials.exam + "/grade?page=" + std::to_string(page)});
         cpr::Response r = session.Get();
         if (r.status_code == 200) {

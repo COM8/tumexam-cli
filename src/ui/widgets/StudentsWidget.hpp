@@ -17,6 +17,7 @@
 #include <gtkmm/switch.h>
 #include <gtkmm/togglebutton.h>
 #include <gtkmm/treemodelcolumn.h>
+#include <gtkmm/treemodelsort.h>
 #include <gtkmm/treeview.h>
 
 namespace ui::widgets {
@@ -39,26 +40,27 @@ class StudentsWidget : public Gtk::Box {
     Gtk::ScrolledWindow studentsScroll;
 
     class StudentColumns : public Gtk::TreeModel::ColumnRecord {
-      public:
-       Gtk::TreeModelColumn<Glib::ustring> srid;
-       Gtk::TreeModelColumn<Glib::ustring> erid;
-       Gtk::TreeModelColumn<Glib::ustring> matrikel;
-       Gtk::TreeModelColumn<Glib::ustring> firstname;
-       Gtk::TreeModelColumn<Glib::ustring> lastname;
-       Gtk::TreeModelColumn<Glib::ustring> flags;
+     public:
+        Gtk::TreeModelColumn<Glib::ustring> srid;
+        Gtk::TreeModelColumn<Glib::ustring> erid;
+        Gtk::TreeModelColumn<Glib::ustring> matrikel;
+        Gtk::TreeModelColumn<Glib::ustring> firstname;
+        Gtk::TreeModelColumn<Glib::ustring> lastname;
+        Gtk::TreeModelColumn<Glib::ustring> flags;
 
-       StudentColumns() {
-          add(srid);
-          add(erid);
-          add(matrikel);
-          add(firstname);
-          add(lastname);
-          add(flags);
-       }
+        StudentColumns() {
+            add(srid);
+            add(erid);
+            add(matrikel);
+            add(firstname);
+            add(lastname);
+            add(flags);
+        }
     };
     StudentColumns studentColumns;
     Gtk::TreeView studentsTreeView;
     Glib::RefPtr<Gtk::ListStore> studentsListStore;
+    Glib::RefPtr<Gtk::TreeModelSort> studentsSortModel;
     Glib::RefPtr<Gtk::TreeModelFilter> studentsFilterModel;
     std::string filterString;
 
