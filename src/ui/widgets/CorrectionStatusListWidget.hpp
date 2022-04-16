@@ -6,7 +6,7 @@
 #include "backend/tumexam/CorrectionStatus.hpp"
 #include "backend/tumexam/Credentials.hpp"
 #include "ui/widgets/CorrectionStatusWidget.hpp"
-#include "ui/widgets/SubmissionWidget.hpp"
+#include "ui/widgets/CorrectionsFishBowl.hpp"
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -16,6 +16,7 @@
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/enums.h>
 #include <gtkmm/label.h>
+#include <gtkmm/overlay.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/searchentry.h>
@@ -48,11 +49,10 @@ class CorrectionStatusListWidget : public Gtk::Box {
     Gtk::CheckButton subproblemChBtn;
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow correctionStatusScroll;
+    Gtk::Overlay fishBowlOverlay;
 
     std::shared_ptr<backend::tumexam::Correction> lastCorrection{nullptr};
-    std::vector<std::shared_ptr<backend::tumexam::Correction>> correctionsToProcess;
-    std::mutex correctionsToProcessMutex{};
-    Glib::Dispatcher correctionsChangedDisp;
+    CorrectionsFishBowl correctionsFishBowl;
 
  public:
     explicit CorrectionStatusListWidget();
@@ -72,11 +72,9 @@ class CorrectionStatusListWidget : public Gtk::Box {
     bool update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus);
 
     void update_last_corrections();
-    void update_last_corrections_ui();
 
     //-----------------------------Events:-----------------------------
     void on_correction_status_changed_from_thread();
-    void on_corrections_changed_from_thread();
     void on_is_updating_changed_from_thread();
     void on_update_clicked();
 };

@@ -11,7 +11,6 @@ namespace ui::widgets {
 CorrectionStatusListWidget::CorrectionStatusListWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) {
     prep_widget();
     correctionStatusChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_correction_status_changed_from_thread));
-    correctionsChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_corrections_changed_from_thread));
     isUpdatingChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_is_updating_changed_from_thread));
     start_thread();
 }
@@ -41,10 +40,13 @@ void CorrectionStatusListWidget::prep_widget() {
 
     correctionStatusScroll.set_margin_top(10);
     correctionStatusScroll.set_vexpand(true);
-    append(correctionStatusScroll);
+    fishBowlOverlay.set_child(correctionStatusScroll);
+    append(fishBowlOverlay);
     correctionStatusScroll.set_child(correctionStatusBox);
     correctionStatusBox.set_margin_start(10);
     correctionStatusBox.set_margin_end(10);
+
+    fishBowlOverlay.add_overlay(correctionsFishBowl);
 }
 
 std::string CorrectionStatusListWidget::get_cur_time() {
@@ -201,27 +203,21 @@ void CorrectionStatusListWidget::update_last_corrections() {
     std::chrono::system_clock::time_point since = lastCorrection ? lastCorrection->date : std::chrono::system_clock::time_point::min();
     std::vector<std::shared_ptr<backend::tumexam::Correction>> corrections = backend::tumexam::get_corrections_since(**(backend::tumexam::get_credentials_instance()), since, 25);
     if (!corrections.empty()) {
-        if (lastCorrection) {
-            correctionsToProcessMutex.lock();
-            correctionsToProcess.insert(correctionsToProcess.end(), corrections.begin(), corrections.end());
-            correctionsToProcessMutex.unlock();
-        }
-        lastCorrection = corrections.front();
         SPDLOG_INFO("Found {} new corrections.", corrections.size());
+        if (lastCorrection) {
+            lastCorrection = corrections.front();
+            correctionsFishBowl.add_corrections(std::move(corrections));
+        } else {
+            lastCorrection = corrections.front();
+        }
     } else {
         SPDLOG_INFO("No new corrections found.");
     }
     correctionStatusChangedDisp.emit();
 }
 
-void CorrectionStatusListWidget::update_last_corrections_ui() {
-    correctionsToProcess.clear();
-}
-
 //-----------------------------Events:-----------------------------
 void CorrectionStatusListWidget::on_correction_status_changed_from_thread() { update_correction_status_ui(); }
-
-void CorrectionStatusListWidget::on_corrections_changed_from_thread() { update_last_corrections_ui(); }
 
 void CorrectionStatusListWidget::on_is_updating_changed_from_thread() { update_is_updating_ui(); }
 }  // namespace ui::widgets
