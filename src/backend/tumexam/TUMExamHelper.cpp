@@ -1,4 +1,5 @@
 #include "TUMExamHelper.hpp"
+#include "backend/tumexam/Correction.hpp"
 #include "backend/tumexam/CorrectionPass.hpp"
 #include "backend/tumexam/CorrectionStatus.hpp"
 #include "backend/tumexam/Credentials.hpp"
@@ -283,7 +284,6 @@ int parse_students_page(const nlohmann::json& j, std::vector<Student>& result) {
     }
     nlohmann::json::array_t students_array;
     j.at("results").get_to(students_array);
-    std::vector<std::shared_ptr<SubmissionStudent>> students;
     for (const nlohmann::json& jStudent : students_array) {
         result.push_back(Student::from_json(jStudent));
     }
@@ -310,6 +310,60 @@ std::vector<Student> get_students(const Credentials& credentials) {
             }
         } else {
             SPDLOG_ERROR("Failed to request students page {} with: {} {}", page, r.status_code, r.error.message);
+        }
+        result.clear();
+        break;
+    }
+    return result;
+}
+
+int parse_corrections_page(const nlohmann::json& j, std::vector<std::shared_ptr<backend::tumexam::Correction>>& result, std::chrono::system_clock::time_point since, size_t max) {
+    if (!j.contains("max_page")) {
+        throw std::runtime_error("Failed to parse corrections. 'max_page' field missing.");
+    }
+    int pages = 0;
+    j.at("max_page").get_to(pages);
+
+    if (!j.contains("results")) {
+        throw std::runtime_error("Failed to parse corrections. 'results' field missing.");
+    }
+    nlohmann::json::array_t corrections_array;
+    j.at("results").get_to(corrections_array);
+    for (const nlohmann::json& jCorrection : corrections_array) {
+        Correction correction = Correction::from_json(jCorrection);
+        if (since >= correction.date) {
+            pages = -1;
+            break;
+        }
+        result.emplace_back(std::make_shared<Correction>(std::move(correction)));
+        if (result.size() >= max) {
+            pages = -1;
+            break;
+        }
+    }
+    return pages;
+}
+
+std::vector<std::shared_ptr<backend::tumexam::Correction>> get_corrections_since(const Credentials& credentials, std::chrono::system_clock::time_point since, size_t max) {
+    std::vector<std::shared_ptr<backend::tumexam::Correction>> result;
+
+    cpr::Session session;
+    session.SetCookies(cpr::Cookies{{"session", credentials.session}, {"token", credentials.token}});
+    int pages = 2;
+    for (int page = 1; page <= pages; page++) {
+        session.SetUrl(cpr::Url{credentials.base_url + "/api/exam/" + credentials.exam + "/result/?page=" + std::to_string(page) + "&sort=date(desc)"});
+        cpr::Response r = session.Get();
+        if (r.status_code == 200) {
+            try {
+                const nlohmann::json j = nlohmann::json::parse(r.text);
+                pages = parse_corrections_page(j, result, since, max);
+                SPDLOG_DEBUG("Downloaded corrections page {} out of {}.", page, pages);
+                continue;
+            } catch (const std::exception& e) {
+                SPDLOG_ERROR("Failed to parse corrections on page {} with: {}", page, e.what());
+            }
+        } else {
+            SPDLOG_ERROR("Failed to request corrections page {} with: {} {}", page, r.status_code, r.error.message);
         }
         result.clear();
         break;

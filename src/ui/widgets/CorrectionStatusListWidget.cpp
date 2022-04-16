@@ -1,4 +1,5 @@
 #include "CorrectionStatusListWidget.hpp"
+#include "backend/tumexam/Correction.hpp"
 #include "backend/tumexam/TUMExamHelper.hpp"
 #include "logger/Logger.hpp"
 #include "spdlog/spdlog.h"
@@ -9,7 +10,8 @@
 namespace ui::widgets {
 CorrectionStatusListWidget::CorrectionStatusListWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) {
     prep_widget();
-    submissionsChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_notification_from_update_thread));
+    correctionStatusChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_correction_status_changed_from_thread));
+    correctionsChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_corrections_changed_from_thread));
     isUpdatingChangedDisp.connect(sigc::mem_fun(*this, &CorrectionStatusListWidget::on_is_updating_changed_from_thread));
     start_thread();
 }
@@ -72,8 +74,16 @@ void CorrectionStatusListWidget::thread_run() {
         std::chrono::steady_clock::duration d = std::chrono::steady_clock::now() - lastUpdate;
         if (shouldUpdateOnce || (autoUpdateSwitch.get_active() && (d > std::chrono::seconds(static_cast<int>(updateIntervallEntry.get_value()))))) {
             shouldUpdateOnce = false;
+
+            isUpdating = true;
+            isUpdatingChangedDisp.emit();
+
             update_correction_status();
+            update_last_corrections();
             lastUpdate = std::chrono::steady_clock::now();
+
+            isUpdating = false;
+            isUpdatingChangedDisp.emit();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
@@ -82,20 +92,16 @@ void CorrectionStatusListWidget::thread_run() {
 
 void CorrectionStatusListWidget::update_correction_status() {
     if (!*(backend::tumexam::get_credentials_instance())) {
-        isUpdating = false;
-        isUpdatingChangedDisp.emit();
         SPDLOG_WARN("Updating correction status canceled - invalid credentials.");
         return;
     }
-    SPDLOG_INFO("Updating correction status...");
 
-    isUpdating = true;
-    isUpdatingChangedDisp.emit();
+    SPDLOG_INFO("Updating correction status...");
     std::vector<std::shared_ptr<backend::tumexam::CorrectionStatus>> status = backend::tumexam::get_correction_status(**(backend::tumexam::get_credentials_instance()), subproblemChBtn.get_active());
     if (status.empty()) {
-        submissionsMutex.lock();
+        correctionStatusMutex.lock();
         correctionStatus.clear();
-        submissionsMutex.unlock();
+        correctionStatusMutex.unlock();
         SPDLOG_INFO("No correction status found.");
     } else {
         // Sort correction status:
@@ -103,18 +109,16 @@ void CorrectionStatusListWidget::update_correction_status() {
                   [](const std::shared_ptr<backend::tumexam::CorrectionStatus>& a, const std::shared_ptr<backend::tumexam::CorrectionStatus>& b) {
                       return a->problem < b->problem;
                   });
-        submissionsMutex.lock();
+        correctionStatusMutex.lock();
         correctionStatus = std::move(status);
-        submissionsMutex.unlock();
+        correctionStatusMutex.unlock();
         SPDLOG_INFO("Found {} correction status.", correctionStatus.size());
     }
-    submissionsChangedDisp.emit();
-    isUpdating = false;
-    isUpdatingChangedDisp.emit();
+    correctionStatusChangedDisp.emit();
 }
 
 void CorrectionStatusListWidget::update_correction_status_ui() {
-    submissionsMutex.lock();
+    correctionStatusMutex.lock();
     if (correctionStatusWidgets.size() != correctionStatus.size()) {
         // Clear
         for (CorrectionStatusWidget* widget : correctionStatusWidgets) {
@@ -139,7 +143,7 @@ void CorrectionStatusListWidget::update_correction_status_ui() {
                     correctionStatusBox.remove(*widget);
                 }
                 correctionStatusWidgets.clear();
-                submissionsMutex.unlock();
+                correctionStatusMutex.unlock();
                 update_correction_status_ui();
             }
         }
@@ -151,7 +155,7 @@ void CorrectionStatusListWidget::update_correction_status_ui() {
     } else {
         updateLbl.set_text(get_cur_time() + " - Success");
     }
-    submissionsMutex.unlock();
+    correctionStatusMutex.unlock();
 }
 
 void CorrectionStatusListWidget::update_is_updating_ui() {
@@ -187,8 +191,37 @@ bool CorrectionStatusListWidget::update_correction_status(std::shared_ptr<backen
     return false;
 }
 
+void CorrectionStatusListWidget::update_last_corrections() {
+    if (!*(backend::tumexam::get_credentials_instance())) {
+        SPDLOG_WARN("Updating last corrections canceled - invalid credentials.");
+        return;
+    }
+
+    SPDLOG_INFO("Updating last corrections...");
+    std::chrono::system_clock::time_point since = lastCorrection ? lastCorrection->date : std::chrono::system_clock::time_point::min();
+    std::vector<std::shared_ptr<backend::tumexam::Correction>> corrections = backend::tumexam::get_corrections_since(**(backend::tumexam::get_credentials_instance()), since, 25);
+    if (!corrections.empty()) {
+        if (lastCorrection) {
+            correctionsToProcessMutex.lock();
+            correctionsToProcess.insert(correctionsToProcess.end(), corrections.begin(), corrections.end());
+            correctionsToProcessMutex.unlock();
+        }
+        lastCorrection = corrections.front();
+        SPDLOG_INFO("Found {} new corrections.", corrections.size());
+    } else {
+        SPDLOG_INFO("No new corrections found.");
+    }
+    correctionStatusChangedDisp.emit();
+}
+
+void CorrectionStatusListWidget::update_last_corrections_ui() {
+    correctionsToProcess.clear();
+}
+
 //-----------------------------Events:-----------------------------
-void CorrectionStatusListWidget::on_notification_from_update_thread() { update_correction_status_ui(); }
+void CorrectionStatusListWidget::on_correction_status_changed_from_thread() { update_correction_status_ui(); }
+
+void CorrectionStatusListWidget::on_corrections_changed_from_thread() { update_last_corrections_ui(); }
 
 void CorrectionStatusListWidget::on_is_updating_changed_from_thread() { update_is_updating_ui(); }
 }  // namespace ui::widgets

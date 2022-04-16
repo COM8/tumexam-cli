@@ -2,9 +2,9 @@
 
 #include "CorrectionStatusListWidget.hpp"
 #include "CorrectionStatusWidget.hpp"
+#include "backend/tumexam/Correction.hpp"
 #include "backend/tumexam/CorrectionStatus.hpp"
 #include "backend/tumexam/Credentials.hpp"
-#include "backend/tumexam/Submissions.hpp"
 #include "ui/widgets/CorrectionStatusWidget.hpp"
 #include "ui/widgets/SubmissionWidget.hpp"
 #include <memory>
@@ -29,9 +29,9 @@ namespace ui::widgets {
 class CorrectionStatusListWidget : public Gtk::Box {
  private:
     std::unique_ptr<std::thread> updateThread{nullptr};
-    std::mutex submissionsMutex{};
+    std::mutex correctionStatusMutex{};
     bool shouldRun{false};
-    Glib::Dispatcher submissionsChangedDisp;
+    Glib::Dispatcher correctionStatusChangedDisp;
     bool isUpdating{false};
     Glib::Dispatcher isUpdatingChangedDisp;
     bool shouldUpdateOnce{false};
@@ -48,6 +48,11 @@ class CorrectionStatusListWidget : public Gtk::Box {
     Gtk::CheckButton subproblemChBtn;
     Gtk::Switch autoUpdateSwitch;
     Gtk::ScrolledWindow correctionStatusScroll;
+
+    std::shared_ptr<backend::tumexam::Correction> lastCorrection{nullptr};
+    std::vector<std::shared_ptr<backend::tumexam::Correction>> correctionsToProcess;
+    std::mutex correctionsToProcessMutex{};
+    Glib::Dispatcher correctionsChangedDisp;
 
  public:
     explicit CorrectionStatusListWidget();
@@ -66,8 +71,12 @@ class CorrectionStatusListWidget : public Gtk::Box {
     void update_is_updating_ui();
     bool update_correction_status(std::shared_ptr<backend::tumexam::CorrectionStatus> correctionStatus);
 
+    void update_last_corrections();
+    void update_last_corrections_ui();
+
     //-----------------------------Events:-----------------------------
-    void on_notification_from_update_thread();
+    void on_correction_status_changed_from_thread();
+    void on_corrections_changed_from_thread();
     void on_is_updating_changed_from_thread();
     void on_update_clicked();
 };
