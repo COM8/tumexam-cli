@@ -91,6 +91,11 @@ void CorrectionsFishBowl::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& c
 
 bool CorrectionsFishBowl::on_tick(const Glib::RefPtr<Gdk::FrameClock>& frameClock) {
     if (lastFrameTime != 0) {
+        // We do not ned to redraw if there is nothing to draw:
+        if (correctionFishes.empty() && correctionsQueue.empty()) {
+            return true;
+        }
+
         // Get us elapsed since last update:
         guint64 elapsed = frameClock->get_frame_time() - lastFrameTime;
         double fractionOfASecond = static_cast<double>(elapsed) / static_cast<double>(G_USEC_PER_SEC);
