@@ -2,7 +2,7 @@
 <gresources>
   <gresource prefix="/ui/">
     <file>theme.css</file>
-    <file>tumexam-cli.svg</file>
-    <file>tumexam-cli.desktop</file>
+    <file>de.tumexam.cli.svg</file>
+    <file>de.tumexam.cli.desktop</file>
   </gresource>
 </gresources>
