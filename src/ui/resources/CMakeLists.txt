@@ -8,3 +8,5 @@ set(RESOURCE_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/theme.css
 
 install(FILES tumexam-cli.desktop DESTINATION /usr/share/applications)
 install(FILES tumexam-cli.svg DESTINATION /usr/local/share/icons/hicolor/scalable/apps)
+# Flatpak icon:
+install(FILES de.tumexam.cli.svg DESTINATION /usr/local/share/icons/hicolor/scalable/apps)

@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop">
+  <!--Created with jdAppdataEdit 3.0-->
   <id>de.tumexam.cli</id>
   <name>TUMexam Client</name>
   <summary>Client for TUMexam to manage students and exams.</summary>
   <developer_name>Fabian Sauter</developer_name>
+  <launchable type="desktop-id">tumexam-cli.desktop</launchable>
   <metadata_license>GFDL-1.3</metadata_license>
   <project_license>GFDL-1.3-or-later</project_license>
   <update_contact>flatpak@uwpx.org</update_contact>
