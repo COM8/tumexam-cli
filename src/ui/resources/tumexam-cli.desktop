@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=TUMexam Client
+Comment=Client for https://tumexam.de/ to manage students and exams.
+Exec=tumexam-cli
+Icon=/usr/local/share/icons/hicolor/scalable/apps/tumexam-cli.svg
+Terminal=False

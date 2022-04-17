@@ -34,6 +34,11 @@ cmake ..
 cmake --build .
 ```
 
+## Installing
+```
+sudo cmake --build . --target install
+```
+
 ## Flatpak
 The TUMexam client can be build and installed using Flatpak.
 

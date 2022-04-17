@@ -71,7 +71,6 @@ pkg_check_modules(GTKMM gtkmm-4.0>=4.4.0 REQUIRED IMPORTED_TARGET)
 # Disable linting for fetch content projects
 clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
-set(CPR_FORCE_USE_SYSTEM_CURL ON)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
                          GIT_TAG 6ea2dec23c3df14ac3b27b7d2d6bbff0cb7ba1b0) # The commit hash for 1.8.1. Replace with the latest from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(cpr)
@@ -80,6 +79,7 @@ FetchContent_Declare(json GIT_REPOSITORY https://github.com/nlohmann/json.git
                           GIT_TAG v3.10.5)
 FetchContent_MakeAvailable(json)
 
+set(SPDLOG_INSTALL ON)
 FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git
                           GIT_TAG v1.9.2)
 FetchContent_MakeAvailable(spdlog)
