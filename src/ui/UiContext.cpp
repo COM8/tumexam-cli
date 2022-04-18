@@ -3,7 +3,7 @@
 namespace ui {
 int UiContext::run(int argc, char** argv) {
     // Create the main GTK application:
-    app = Gtk::Application::create("de.tumexam");
+    app = Gtk::Application::create("de.tumexam.cli");
 
     app->signal_startup().connect([&] {
         add_main_window();
