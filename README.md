@@ -41,38 +41,4 @@ sudo cmake --build . --target install
 
 ## Flatpak
 The TUMexam client can be build and installed using Flatpak.
-
-### Requirements
-#### Fedora
-```
-sudo dnf install flatpak flatpak-builder
-flatpak install flathub org.gnome.Sdk//41 org.gnome.Platform//41
-```
-
-#### Debian/Ubuntu
-```
-sudo apt install flatpak flatpak-builder
-flatpak install flathub org.gnome.Sdk//41 org.gnome.Platform//41
-```
-
-### Building
-```
-git clone https://github.com/COM8/tumexam-cli.git
-cd tumexam-cli
-flatpak-builder --force-clean flatpak_build_dir de.tumexam.cli.yml
-```
-
-### Installing
-```
-flatpak-builder --user --install --force-clean flatpak_build_dir de.tumexam.cli.yml
-```
-
-### Uninstalling
-```
-flatpak uninstall de.tumexam.cli
-```
-
-### Executing
-```
-flatpak run de.tumexam.cli
-```
+More instructions will follow shortly while I'm migrating the Flatpak repository to Flathub.
