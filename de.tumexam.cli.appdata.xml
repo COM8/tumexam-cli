@@ -15,22 +15,22 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/dark_submissions.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_submissions.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/light_submissions.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_submissions.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/dark_correction_notes.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_correction_notes.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/light_correction_notes.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_correction_notes.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/dark_correction.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_correction.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/flatpak/images/light_correction.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_correction.png</image>
     </screenshot>
   </screenshots>
   <releases>
