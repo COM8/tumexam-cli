@@ -16,6 +16,12 @@ SubmissionStatsBarWidget::SubmissionStatsBarWidget() {
 void SubmissionStatsBarWidget::prep_widget() {}
 
 void SubmissionStatsBarWidget::set_submissions(const std::unique_ptr<backend::tumexam::Submissions>& submissions) {
+    registrations = 0;
+    downloaded = 0;
+    announced = 0;
+    uploaded = 0;
+    uploadedAnnounced = 0;
+
     if (submissions) {
         for (const std::shared_ptr<backend::tumexam::SubmissionStudent>& submission : submissions->students) {
             registrations++;
@@ -31,12 +37,6 @@ void SubmissionStatsBarWidget::set_submissions(const std::unique_ptr<backend::tu
                 downloaded++;
             }
         }
-    } else {
-        registrations = 0;
-        downloaded = 0;
-        announced = 0;
-        uploaded = 0;
-        uploadedAnnounced = 0;
     }
     update_tooltip();
     queue_draw();
