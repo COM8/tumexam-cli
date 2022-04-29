@@ -195,7 +195,7 @@ void FeedbacksWidget::update_feedbacks_ui() {
         }
         filter_feedbacks();
         if (feedbacks->count_total > 0) {
-            statusText = "Found " + std::to_string(feedbacks->count_total) + " comment + " + (feedbacks->count_total > 1 ? "s" : "") + " from " + std::to_string(feedbacks->count_students_with_feedback) + " student" + (feedbacks->count_students_with_feedback > 1 ? "s" : "") + ".";
+            statusText = "Found " + std::to_string(feedbacks->count_total) + " comment" + (feedbacks->count_total > 1 ? "s" : "") + " from " + std::to_string(feedbacks->count_students_with_feedback) + " student" + (feedbacks->count_students_with_feedback > 1 ? "s" : "") + ".";
         }
         statusText += " " + std::to_string(feedbacks->count_students_downloaded) + " downloaded.";
         statusBox.show();
