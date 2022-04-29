@@ -188,18 +188,23 @@ void FeedbacksWidget::update_feedbacks_ui() {
     clear_feedbacks();
     feedbackFlowBoxWidgets.clear();
     feedbackWidgets.clear();
+    std::string statusText = "No feedback yet.";
     if (feedbacks) {
         for (const std::shared_ptr<backend::tumexam::FeedbackStudent>& feedback : feedbacks->students) {
             add_feedback_button(feedback);
         }
         filter_feedbacks();
-        countLbl.set_text("Found " + std::to_string(feedbacks->count_total) + " from " + std::to_string(feedbacks->count_students_with_feedback) + " students.");
+        if (feedbacks->count_total > 0) {
+            statusText = "Found " + std::to_string(feedbacks->count_total) + " comment + " + (feedbacks->count_total > 1 ? "s" : "") + " from " + std::to_string(feedbacks->count_students_with_feedback) + " student" + (feedbacks->count_students_with_feedback > 1 ? "s" : "") + ".";
+        }
+        statusText += " " + std::to_string(feedbacks->count_students_downloaded) + " downloaded.";
         statusBox.show();
         updateLbl.set_text(get_cur_time() + " - Success");
     } else {
         updateLbl.set_text(get_cur_time() + " - No feedbacks found");
         statusBox.hide();
     }
+    countLbl.set_text(statusText);
     feedbacksMutex.unlock();
 }
 
