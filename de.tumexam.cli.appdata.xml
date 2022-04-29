@@ -15,26 +15,20 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_submissions.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/1.5.1.0/images/submission_dark.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_submissions.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/1.5.1.0/images/correction_dark.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_correction_notes.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/1.5.1.0/images/feedback_dark.png</image>
     </screenshot>
     <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_correction_notes.png</image>
-    </screenshot>
-    <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/dark_correction.png</image>
-    </screenshot>
-    <screenshot>
-      <image type="source">https://github.com/COM8/tumexam-cli/raw/main/images/light_correction.png</image>
+      <image type="source">https://github.com/COM8/tumexam-cli/raw/1.5.1.0/images/students_dark.png</image>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0" date="2022-03-20" type="stable"/>
+    <release version="1.5.2.0" date="2022-04-29" type="stable"/>
   </releases>
   <url type="homepage">https://github.com/COM8/tumexam-cli</url>
   <url type="bugtracker">https://github.com/COM8/tumexam-cli/issues</url>
