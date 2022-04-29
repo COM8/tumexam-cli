@@ -109,6 +109,9 @@ void CorrectionStatusListWidget::update_correction_status() {
         // Sort correction status:
         std::sort(status.begin(), status.end(),
                   [](const std::shared_ptr<backend::tumexam::CorrectionStatus>& a, const std::shared_ptr<backend::tumexam::CorrectionStatus>& b) {
+                      if (a->subproblem && b->subproblem && a->problem == b->problem) {
+                          return *a->subproblem < *b->subproblem;
+                      }
                       return a->problem < b->problem;
                   });
         correctionStatusMutex.lock();
