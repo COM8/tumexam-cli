@@ -11,19 +11,25 @@ C++ client for https://tumexam.de/ to manage students and exams.
 
 ![Dark Feedback Overview](images/feedback_dark.png)
 
-## Requirements
+## [<img src="https://flathub.org/assets/badges/flathub-badge-en.svg" height="50">](https://flathub.org/apps/details/de.tumexam.cli)
+The TUMexam client can be build and installed using Flatpak.
 
-### Fedora
+The build instructions can be found here: https://github.com/flathub/de.tumexam.cli
+
+## Building
+### Requirements
+
+#### Fedora
 ```
 sudo dnf install gtkmm40-devel libcurl-devel gcc cmake git
 ```
 
-### Debian/Ubuntu
+#### Debian/Ubuntu
 ```
 sudo apt install libgtkmm-4.0-dev libcurl4-openssl-dev gcc cmake git
 ```
 
-## Building
+### Compiling
 ```
 git clone https://github.com/COM8/tumexam-cli.git
 cd tumexam-cli
@@ -33,11 +39,7 @@ cmake ..
 cmake --build .
 ```
 
-## Installing
+### Installing
 ```
 sudo cmake --build . --target install
 ```
-
-## Flatpak
-The TUMexam client can be build and installed using Flatpak.
-More instructions will follow shortly while I'm migrating the Flatpak repository to Flathub.
