@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(PROJECT_DESCRIPTION "Client for https://tumexam.in.tum.de to unlock your device for printing.")
 project("tumexam-cli" 
-            VERSION 1.2.0.0
+            VERSION 1.3.0.0
             DESCRIPTION "${PROJECT_DESCRIPTION}"
             HOMEPAGE_URL "https://github.com/COM8/tumexam-cli")
 set(VERSION_NAME "dev")
