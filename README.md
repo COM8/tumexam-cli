@@ -3,14 +3,13 @@ C++ client for https://tumexam.de/ to manage students and exams.
 
 ## Examples
 
-![Dark Submission Overview](images/dark_submissions.png)
-![Light Submission Overview](images/light_submissions.png)
+![Dark Correction Overview](images/correction_dark.png)
 
-![Dark Submission Notes](images/dark_correction_notes.png)
-![Light Submission Notes](images/light_correction_notes.png)
+![Dark Submission Overview](images/submission_dark.png)
 
-![Dark Correction Overview](images/dark_correction.png)
-![Light Correction Overview](images/light_correction.png)
+![Dark Students Overview](images/students_dark.png)
+
+![Dark Feedback Overview](images/feedback_dark.png)
 
 ## Requirements
 
