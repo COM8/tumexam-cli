@@ -1,7 +1,11 @@
 #include "UiContext.hpp"
+#include <adwaita.h>
 
 namespace ui {
 int UiContext::run(int argc, char** argv) {
+    // Initialize Adwaita:
+    adw_init();
+
     // Create the main GTK application:
     app = Gtk::Application::create("de.tumexam.cli");
 
