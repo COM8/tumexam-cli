@@ -1,12 +1,15 @@
 #include "StringUtils.hpp"
+#include <algorithm>
+#include <cctype>
+#include <functional>
 
 namespace utils {
 void ltrim(std::string_view& s) {
-    s.remove_prefix(std::distance(s.cbegin(), std::find_if(s.cbegin(), s.cend(), std::not1(std::ptr_fun<int, int>(std::isspace)))));
+    s.remove_prefix(std::distance(s.cbegin(), std::find_if(s.cbegin(), s.cend(), std::not_fn([](int c) { return std::isspace(c) != 0; }))));
 }
 
 void rtrim(std::string_view& s) {
-    s.remove_suffix(std::distance(s.crbegin(), std::find_if(s.crbegin(), s.crend(), std::not1(std::ptr_fun<int, int>(std::isspace)))));
+    s.remove_suffix(std::distance(s.crbegin(), std::find_if(s.crbegin(), s.crend(), std::not_fn([](int c) { return std::isspace(c) != 0; }))));
 }
 
 std::string to_lower_clean(const std::string& s) {
