@@ -1,20 +1,18 @@
 name: CI
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+
+on: [push, pull_request]
 
 jobs:
   ubuntu-latest:
     runs-on: ubuntu-latest
+    container: fedora:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: false
     - name: Install dependencies
-      run: sudo apt install libcurl4-openssl-dev
+      run: sudo dnf install gtkmm40-devel libcurl-devel gcc cmake git
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -29,13 +27,14 @@ jobs:
   
   clang-tidy:
     runs-on: ubuntu-latest
+    container: fedora:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: false
     - name: Install dependencies
-      run: sudo apt install libcurl4-openssl-dev
+      run: sudo dnf install gtkmm40-devel libcurl-devel gcc cmake git
     - name: Install clang-tidy
       run: sudo apt install clang-tidy
     - name: "[Release g++] Build & Test"
