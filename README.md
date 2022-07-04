@@ -21,7 +21,7 @@ The build instructions can be found here: https://github.com/flathub/de.tumexam.
 
 #### Fedora
 ```
-sudo dnf install gtkmm40-devel libcurl-devel gcc cmake git
+sudo dnf install gtkmm4.0-devel libcurl-devel gcc cmake git
 ```
 
 #### Debian/Ubuntu
