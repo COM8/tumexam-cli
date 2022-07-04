@@ -28,7 +28,6 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.5.2.0" date="2022-04-29" type="stable"/>
     <release version="1.6.0.0" date="2022-07-04" type="stable"/>
   </releases>
   <url type="homepage">https://github.com/COM8/tumexam-cli</url>
