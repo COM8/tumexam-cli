@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 set(PROJECT_DESCRIPTION "Client for https://tumexam.in.tum.de to unlock your device for printing.")
 project("tumexam-cli" 
-            VERSION 1.5.2.0
+            VERSION 1.6.0.0
             DESCRIPTION "${PROJECT_DESCRIPTION}"
             HOMEPAGE_URL "https://github.com/COM8/tumexam-cli")
 set(VERSION_NAME "dev")
@@ -81,7 +81,7 @@ FetchContent_MakeAvailable(json)
 
 set(SPDLOG_INSTALL ON)
 FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git
-                          GIT_TAG v1.9.2)
+                            GIT_TAG v1.9.2)
 FetchContent_MakeAvailable(spdlog)
 
 restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
