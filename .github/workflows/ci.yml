@@ -12,7 +12,7 @@ jobs:
       with:
         submodules: false
     - name: Install dependencies
-      run: sudo dnf install -y gtkmm4.0-devel libcurl-devel gcc cmake git
+      run: sudo dnf install -y gtkmm4.0-devel libcurl-devel gcc cmake git g++ clang
     - name: "[Release g++] Build & Test"
       uses: ashutoshvarma/action-cmake-build@master
       with:
@@ -34,7 +34,7 @@ jobs:
       with:
         submodules: false
     - name: Install dependencies
-      run: sudo dnf install -y gtkmm4.0-devel libcurl-devel gcc cmake git
+      run: sudo dnf install -y gtkmm4.0-devel libcurl-devel gcc cmake git g++ clang
     - name: Install clang-tidy
       run: sudo dnf install -y clang-tools-extra
     - name: "[Release g++] Build & Test"
