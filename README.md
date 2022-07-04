@@ -21,12 +21,12 @@ The build instructions can be found here: https://github.com/flathub/de.tumexam.
 
 #### Fedora
 ```
-sudo dnf install gtkmm4.0-devel libcurl-devel gcc cmake git
+sudo dnf install gtkmm4.0-devel libadwaita-devel libcurl-devel gcc cmake git
 ```
 
 #### Debian/Ubuntu
 ```
-sudo apt install libgtkmm-4.0-dev libcurl4-openssl-dev gcc cmake git
+sudo apt install libgtkmm-4.0-dev libadwaita-1-dev libcurl4-openssl-dev gcc cmake git
 ```
 
 ### Compiling
