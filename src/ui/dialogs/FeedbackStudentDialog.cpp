@@ -1,5 +1,4 @@
 #include "FeedbackStudentDialog.hpp"
-#include "cassert"
 #include "utils/Date.hpp"
 #include <cassert>
 #include <string>

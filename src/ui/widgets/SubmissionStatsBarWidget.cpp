@@ -90,7 +90,7 @@ void SubmissionStatsBarWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Contex
     ctx->rectangle(xOffset, 0, drawWidth, height);
     ctx->set_source_rgba(UPLOADED_ANNOUNCED_COLOR.get_red(), UPLOADED_ANNOUNCED_COLOR.get_green(), UPLOADED_ANNOUNCED_COLOR.get_blue(), UPLOADED_ANNOUNCED_COLOR.get_alpha());
     ctx->fill();
-    xOffset += drawWidth;
+    // xOffset += drawWidth;
 
     // 25%:
     ctx->move_to(width * 0.25, 0);

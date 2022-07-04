@@ -10,6 +10,14 @@
 #include <pangomm/fontdescription.h>
 
 namespace ui::widgets {
+CorrectionsFishBowl::CorrectionFish::CorrectionFish(std::shared_ptr<backend::tumexam::Correction> correction, double x, double y, double dx, double dy, bool decaying, double alpha) : correction(std::move(correction)),
+                                                                                                                                                                                       x(x),
+                                                                                                                                                                                       y(y),
+                                                                                                                                                                                       dx(dx),
+                                                                                                                                                                                       dy(dy),
+                                                                                                                                                                                       decaying(decaying),
+                                                                                                                                                                                       alpha(alpha) {}
+
 CorrectionsFishBowl::CorrectionsFishBowl() {
     prep_widget();
 }
@@ -142,7 +150,8 @@ bool CorrectionsFishBowl::on_tick(const Glib::RefPtr<Gdk::FrameClock>& frameCloc
             double y = 0;
             double dx = 0;
             double dy = 10 + (distr(gen) * 10);
-            correctionFishes.emplace_back(correctionsQueue.front(), x, y, dx, dy, false, 1.0);
+            CorrectionFish fish(correctionsQueue.front(), x, y, dx, dy, false, 1.0);
+            correctionFishes.emplace_back(std::move(fish));
             correctionsQueue.pop();
         }
     }

@@ -27,6 +27,15 @@ class CorrectionsFishBowl : public Gtk::DrawingArea {
         double dy;
         bool decaying;
         double alpha;
+
+        CorrectionFish(std::shared_ptr<backend::tumexam::Correction> correction, double x, double y, double dx, double dy, bool decaying, double alpha);
+        CorrectionFish(CorrectionFish&& old) noexcept = default;
+        CorrectionFish(const CorrectionFish& other) noexcept = default;
+
+        ~CorrectionFish() = default;
+
+        CorrectionFish& operator=(CorrectionFish&& old) noexcept = default;
+        CorrectionFish& operator=(const CorrectionFish& other) noexcept = default;
     } __attribute__((aligned(64)));
 
     std::list<CorrectionFish> correctionFishes{};
