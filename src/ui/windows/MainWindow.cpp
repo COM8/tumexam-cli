@@ -61,7 +61,7 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     box->set_margin_start(10);
     box->set_margin_end(10);
     box->set_margin_bottom(10);
-    stack->add(*box, "connect", "Connect");
+    stack->add(*box, "connect", "🔌 Connect");
 
     Gtk::Label* instanceLbl = Gtk::make_managed<Gtk::Label>("Instance");
     instanceLbl->set_halign(Gtk::Align::START);
@@ -108,13 +108,13 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     loginBox->append(loginSpinner);
 }
 
-void MainWindow::prep_students(Gtk::Stack* stack) { stack->add(students, "students", "Students"); }
+void MainWindow::prep_students(Gtk::Stack* stack) { stack->add(students, "students", "🧑‍🎓 Students"); }
 
-void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "Submission"); }
+void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "submission", "📫 Submission"); }
 
-void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatus, "correction", "Correction"); }
+void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatus, "correction", "✅ Correction"); }
 
-void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedback", "Feedback"); }
+void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedback", "🗒️ Feedback"); }
 
 std::string MainWindow::get_suggested_instance_name() {
     std::chrono::year_month_day ymd = std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
