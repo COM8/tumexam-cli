@@ -4,8 +4,10 @@
 #include "ui/widgets/FeedbacksWidget.hpp"
 #include "ui/widgets/StudentsWidget.hpp"
 #include <cassert>
+#include <chrono>
 #include <memory>
 #include <optional>
+#include <string>
 #include <thread>
 #include <gdk/gdkkeysyms.h>
 #include <glibmm/refptr.h>
@@ -65,8 +67,9 @@ void MainWindow::prep_connect(Gtk::Stack* stack) {
     instanceLbl->set_halign(Gtk::Align::START);
     instanceLbl->set_margin_top(10);
     box->append(*instanceLbl);
-    instanceEntry.set_placeholder_text("2021ws-in-gbs");
-    instanceEntry.get_buffer()->set_text("2021ws-in-gbs");
+    const std::string instanceName = get_suggested_instance_name();
+    instanceEntry.set_placeholder_text(instanceName);
+    instanceEntry.get_buffer()->set_text(instanceName);
     box->append(instanceEntry);
 
     Gtk::Label* examLbl = Gtk::make_managed<Gtk::Label>("Exam");
@@ -112,6 +115,14 @@ void MainWindow::prep_submission(Gtk::Stack* stack) { stack->add(submissions, "s
 void MainWindow::prep_correction(Gtk::Stack* stack) { stack->add(correctionStatus, "correction", "Correction"); }
 
 void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedback", "Feedback"); }
+
+std::string MainWindow::get_suggested_instance_name() {
+    std::chrono::year_month_day ymd = std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
+    if (ymd.month() >= std::chrono::May) {
+        return std::to_string(static_cast<int>(ymd.year())) + "ws-in-gbs";
+    }
+    return std::to_string(static_cast<int>(ymd.year()) - 1) + "ws-in-gbs";
+}
 
 //-----------------------------Events:-----------------------------
 void MainWindow::on_inspector_btn_clicked() {

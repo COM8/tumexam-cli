@@ -42,6 +42,7 @@ class MainWindow : public Gtk::Window {
     void prep_correction(Gtk::Stack* stack);
     void prep_feedback(Gtk::Stack* stack);
     void login_thread_func();
+    static std::string get_suggested_instance_name();
 
     //-----------------------------Events:-----------------------------
     static void on_inspector_btn_clicked();
