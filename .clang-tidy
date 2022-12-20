@@ -33,7 +33,8 @@ Checks: '*,
 -altera-unroll-loops,
 -altera-id-dependent-backward-branch,
 -bugprone-easily-swappable-parameters,
--readability-identifier-length
+-readability-identifier-length,
+-misc-const-correctness
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
