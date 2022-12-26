@@ -119,9 +119,9 @@ void MainWindow::prep_feedback(Gtk::Stack* stack) { stack->add(feedbacks, "feedb
 std::string MainWindow::get_suggested_instance_name() {
     std::chrono::year_month_day ymd = std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now());
     if (ymd.month() >= std::chrono::May) {
-        return std::to_string(static_cast<int>(ymd.year())) + "ws-in-gbs";
+        return std::to_string(static_cast<int>(ymd.year())) + "ws-cit-gbs";
     }
-    return std::to_string(static_cast<int>(ymd.year()) - 1) + "ws-in-gbs";
+    return std::to_string(static_cast<int>(ymd.year()) - 1) + "ws-cit-gbs";
 }
 
 //-----------------------------Events:-----------------------------
