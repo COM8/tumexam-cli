@@ -72,6 +72,7 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
                         status->pass1 = pass;
                     } else {
                         if (status->pass1) {
+                            // NOLINTNEXTLINE (bugprone-unchecked-optional-access)
                             *(status->pass1) += pass;
                         } else {
                             status->pass1 = pass;
@@ -82,6 +83,7 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
                         status->pass2 = pass;
                     } else {
                         if (status->pass2) {
+                            // NOLINTNEXTLINE (bugprone-unchecked-optional-access)
                             *(status->pass2) += pass;
                         } else {
                             status->pass2 = pass;
@@ -96,10 +98,12 @@ std::vector<std::shared_ptr<CorrectionStatus>> get_correction_status(const Crede
                 for (std::shared_ptr<CorrectionStatus>& s : correctionStatus) {
                     s->subproblem = std::nullopt;
                     if (s->pass1) {
+                        // NOLINTNEXTLINE (bugprone-unchecked-optional-access)
                         s->pass1->corrected /= s->pass1->subproblem_count;
                     }
 
                     if (s->pass2) {
+                        // NOLINTNEXTLINE (bugprone-unchecked-optional-access)
                         s->pass2->corrected /= s->pass2->subproblem_count;
                         s->subproblem = std::nullopt;
                     }
