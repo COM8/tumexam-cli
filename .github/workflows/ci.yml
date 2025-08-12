@@ -8,7 +8,7 @@ jobs:
     container: fedora:latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: false
     - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
     container: fedora:latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         submodules: false
     - name: Install dependencies
